@@ -1,0 +1,63 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h2>Profil Utilisateur</h2>
+    <p>Gérez vos informations personnelles et paramètres de compte</p>
+  </div>
+
+  <div class="profile-content">
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <div class="avatar-placeholder">
+          {{ getInitials() }}
+        </div>
+      </div>
+      
+      <div class="profile-info">
+        <h3>Informations Personnelles</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Nom Complet</label>
+            <span>{{ keycloakService.fullName || 'Non disponible' }}</span>
+          </div>
+          <div class="info-item">
+            <label>ID Utilisateur</label>
+            <span>{{ keycloakService.userId || 'Non disponible' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Statut Token</label>
+            <span class="status-badge" [class.valid]="keycloakService.isTokenValid">
+              {{ keycloakService.isTokenValid ? 'Valide' : 'Expiré' }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Token Présent</label>
+            <span class="status-badge" [class.valid]="keycloakService.token">
+              {{ keycloakService.token ? 'Oui' : 'Non' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <h3>Actions du Compte</h3>
+      <div class="action-grid">
+        <button class="action-card primary" (click)="openAccountManagement()">
+          <div class="action-icon">👤</div>
+          <div class="action-content">
+            <h4>Gérer le Compte</h4>
+            <p>Accéder aux paramètres Keycloak</p>
+          </div>
+        </button>
+        
+        <button class="action-card secondary" (click)="goToDashboard()">
+          <div class="action-icon">📊</div>
+          <div class="action-content">
+            <h4>Retour Dashboard</h4>
+            <p>Aller au tableau de bord</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

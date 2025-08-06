@@ -1,0 +1,49 @@
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>VERMEG</h2>
+      <span class="subtitle">Admin Panel</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a href="/dashboard" class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+        <i class="icon">📊</i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/profile" class="nav-item" routerLink="/profile" routerLinkActive="active">
+        <i class="icon">👤</i>
+        <span>Profil</span>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="icon">📋</i>
+        <span>Gestion</span>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="icon">⚙️</i>
+        <span>Paramètres</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Top Navbar -->
+    <header class="top-navbar">
+      <div class="navbar-left">
+        <h1>Tableau de Bord</h1>
+      </div>
+      <div class="navbar-right">
+        <div class="user-info">
+          <span class="user-name">{{ keycloakService.fullName || 'Utilisateur' }}</span>
+          <button class="logout-btn" (click)="logout()">Déconnexion</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <router-outlet />
+    </div>
+  </main>
+</div> 

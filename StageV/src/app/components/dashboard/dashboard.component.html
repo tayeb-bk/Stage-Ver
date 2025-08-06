@@ -1,0 +1,54 @@
+<div class="dashboard-container">
+  <div class="welcome-section">
+    <h2>Bienvenue dans votre tableau de bord !</h2>
+    <p>Gérez vos données et suivez vos activités</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👤</div>
+      <div class="stat-content">
+        <h3>Profil Utilisateur</h3>
+        <p class="stat-value">{{ keycloakService.fullName || 'Non disponible' }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🆔</div>
+      <div class="stat-content">
+        <h3>ID Utilisateur</h3>
+        <p class="stat-value">{{ keycloakService.userId || 'Non disponible' }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🔐</div>
+      <div class="stat-content">
+        <h3>Statut Token</h3>
+        <p class="stat-value">{{ keycloakService.isTokenValid ? 'Valide' : 'Expiré' }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <h3>Session Active</h3>
+        <p class="stat-value">{{ keycloakService.isTokenValid ? 'Oui' : 'Non' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-section">
+    <h3>Actions Rapides</h3>
+    <div class="action-buttons">
+      <button class="action-btn primary" (click)="openAccountManagement()">
+        <span>👤</span>
+        Gérer le Compte
+      </button>
+      <button class="action-btn secondary" (click)="refreshToken()">
+        <span>🔄</span>
+        Actualiser Token
+      </button>
+    </div>
+  </div>
+</div> 

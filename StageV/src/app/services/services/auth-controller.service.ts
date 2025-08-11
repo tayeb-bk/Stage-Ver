@@ -11,8 +11,8 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { delete$ } from '../fn/auth-controller/delete';
-import { Delete$Params } from '../fn/auth-controller/delete';
+import { delete1 } from '../fn/auth-controller/delete-1';
+import { Delete1$Params } from '../fn/auth-controller/delete-1';
 
 @Injectable({ providedIn: 'root' })
 export class AuthControllerService extends BaseService {
@@ -20,29 +20,29 @@ export class AuthControllerService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `delete()` */
-  static readonly DeletePath = '/api/auth/delete/{username}';
+  /** Path part for operation `delete1()` */
+  static readonly Delete1Path = '/api/auth/delete/{username}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `delete()` instead.
+   * To access only the response body, use `delete1()` instead.
    *
    * This method doesn't expect any request body.
    */
-  delete$Response(params: Delete$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+  delete1$Response(params: Delete1$Params, context?: HttpContext): Observable<StrictHttpResponse<{
 }>> {
-    return delete$(this.http, this.rootUrl, params, context);
+    return delete1(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `delete$Response()` instead.
+   * To access the full response (for headers, for example), `delete1$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  delete(params: Delete$Params, context?: HttpContext): Observable<{
+  delete1(params: Delete1$Params, context?: HttpContext): Observable<{
 }> {
-    return this.delete$Response(params, context).pipe(
+    return this.delete1$Response(params, context).pipe(
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)

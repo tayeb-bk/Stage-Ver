@@ -22,4 +22,4 @@ export class ProfileComponent {
   goToDashboard() {
     window.location.href = '/dashboard';
   }
-} 
+}

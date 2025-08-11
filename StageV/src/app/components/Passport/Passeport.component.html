@@ -1,0 +1,202 @@
+<!-- Passeport.component.html -->
+<div class="passport-card">
+  <!-- 🔙 Bouton retour -->
+  <button class="back-btn" onclick="window.location.href='/passportliste'">⬅ Retour à la liste des passeports</button>
+
+  <h2>Créer un nouveau passeport</h2>
+
+  <!-- Message de succès seulement -->
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+    <button type="button" class="close-btn" (click)="closeSuccessMessage()">×</button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #passportForm="ngForm" class="passport-form">
+
+    <div class="form-group">
+      <label for="firstName">Prénom <span class="required">*</span></label>
+      <input
+        id="firstName"
+        name="firstName"
+        type="text"
+        [(ngModel)]="newPassport.firstName"
+        (blur)="validateField('firstName', newPassport.firstName)"
+        (input)="validateField('firstName', newPassport.firstName)"
+        required
+        placeholder="Entrez le prénom"
+        maxlength="50"
+        [class.error-field]="hasFieldError('firstName')"
+      />
+      <div *ngIf="hasFieldError('firstName')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('firstName') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="lastName">Nom <span class="required">*</span></label>
+      <input
+        id="lastName"
+        name="lastName"
+        type="text"
+        [(ngModel)]="newPassport.lastName"
+        (blur)="validateField('lastName', newPassport.lastName)"
+        (input)="validateField('lastName', newPassport.lastName)"
+        required
+        placeholder="Entrez le nom"
+        maxlength="50"
+        [class.error-field]="hasFieldError('lastName')"
+      />
+      <div *ngIf="hasFieldError('lastName')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('lastName') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="nationality">Nationalité <span class="required">*</span></label>
+      <input
+        id="nationality"
+        name="nationality"
+        type="text"
+        [(ngModel)]="newPassport.nationality"
+        (blur)="validateField('nationality', newPassport.nationality)"
+        (input)="validateField('nationality', newPassport.nationality)"
+        required
+        placeholder="Ex: Tunisienne"
+        maxlength="30"
+        [class.error-field]="hasFieldError('nationality')"
+      />
+      <div *ngIf="hasFieldError('nationality')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('nationality') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="sex">Sexe <span class="required">*</span></label>
+      <select
+        id="sex"
+        name="sex"
+        [(ngModel)]="newPassport.sex"
+        (change)="validateField('sex', newPassport.sex)"
+        required
+        [class.error-field]="hasFieldError('sex')"
+      >
+        <option value="">Sélectionnez</option>
+        <option value="M">Masculin</option>
+        <option value="F">Féminin</option>
+      </select>
+      <div *ngIf="hasFieldError('sex')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('sex') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateOfBirth">Date de naissance <span class="required">*</span></label>
+      <input
+        id="dateOfBirth"
+        name="dateOfBirth"
+        type="date"
+        [(ngModel)]="newPassport.dateOfBirth"
+        (change)="validateField('dateOfBirth', newPassport.dateOfBirth)"
+        required
+        [class.error-field]="hasFieldError('dateOfBirth')"
+      />
+      <div *ngIf="hasFieldError('dateOfBirth')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('dateOfBirth') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="placeOfBirth">Lieu de naissance <span class="required">*</span></label>
+      <input
+        id="placeOfBirth"
+        name="placeOfBirth"
+        type="text"
+        [(ngModel)]="newPassport.placeOfBirth"
+        (blur)="validateField('placeOfBirth', newPassport.placeOfBirth)"
+        (input)="validateField('placeOfBirth', newPassport.placeOfBirth)"
+        required
+        placeholder="Ville, Pays"
+        maxlength="100"
+        [class.error-field]="hasFieldError('placeOfBirth')"
+      />
+      <div *ngIf="hasFieldError('placeOfBirth')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('placeOfBirth') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="address">Adresse <span class="required">*</span></label>
+      <input
+        id="address"
+        name="address"
+        type="text"
+        [(ngModel)]="newPassport.address"
+        (blur)="validateField('address', newPassport.address)"
+        (input)="validateField('address', newPassport.address)"
+        required
+        placeholder="Adresse complète"
+        maxlength="200"
+        [class.error-field]="hasFieldError('address')"
+      />
+      <div *ngIf="hasFieldError('address')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('address') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateOfIssue">Date de délivrance <span class="required">*</span></label>
+      <input
+        id="dateOfIssue"
+        name="dateOfIssue"
+        type="date"
+        [(ngModel)]="newPassport.dateOfIssue"
+        (change)="validateField('dateOfIssue', newPassport.dateOfIssue)"
+        required
+        [class.error-field]="hasFieldError('dateOfIssue')"
+      />
+      <div *ngIf="hasFieldError('dateOfIssue')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('dateOfIssue') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateOfExpiry">Date d'expiration <span class="required">*</span></label>
+      <input
+        id="dateOfExpiry"
+        name="dateOfExpiry"
+        type="date"
+        [(ngModel)]="newPassport.dateOfExpiry"
+        (change)="validateField('dateOfExpiry', newPassport.dateOfExpiry)"
+        required
+        [class.error-field]="hasFieldError('dateOfExpiry')"
+      />
+      <div *ngIf="hasFieldError('dateOfExpiry')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('dateOfExpiry') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="issuingAuthority">Autorité de délivrance <span class="required">*</span></label>
+      <input
+        id="issuingAuthority"
+        name="issuingAuthority"
+        type="text"
+        [(ngModel)]="newPassport.issuingAuthority"
+        (blur)="validateField('issuingAuthority', newPassport.issuingAuthority)"
+        (input)="validateField('issuingAuthority', newPassport.issuingAuthority)"
+        required
+        placeholder="Ex: Ministère de l'Intérieur"
+        maxlength="100"
+        [class.error-field]="hasFieldError('issuingAuthority')"
+      />
+      <div *ngIf="hasFieldError('issuingAuthority')" class="error-message">
+        <i class="error-icon">⚠</i> {{ getFieldError('issuingAuthority') }}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit">Créer le passeport</button>
+    </div>
+
+  </form>
+</div>

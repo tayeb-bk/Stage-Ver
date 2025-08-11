@@ -8,16 +8,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { Passport } from '../../models/passport';
 
-export interface Delete$Params {
-  username: string;
+export interface GetById$Params {
+  id: number;
 }
 
-export function delete$(http: HttpClient, rootUrl: string, params: Delete$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
-  const rb = new RequestBuilder(rootUrl, delete$.PATH, 'delete');
+export function getById(http: HttpClient, rootUrl: string, params: GetById$Params, context?: HttpContext): Observable<StrictHttpResponse<Passport>> {
+  const rb = new RequestBuilder(rootUrl, getById.PATH, 'get');
   if (params) {
-    rb.path('username', params.username, {});
+    rb.path('id', params.id, {});
   }
 
   return http.request(
@@ -25,10 +25,9 @@ export function delete$(http: HttpClient, rootUrl: string, params: Delete$Params
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<{
-      }>;
+      return r as StrictHttpResponse<Passport>;
     })
   );
 }
 
-delete$.PATH = '/api/auth/delete/{username}';
+getById.PATH = '/api/passports/{id}';

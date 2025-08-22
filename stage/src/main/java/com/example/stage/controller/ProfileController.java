@@ -15,8 +15,5 @@ public class ProfileController {
     @Autowired
     private UserSynchronizer userSynchronizer;
 
-    @GetMapping
-    public User getProfile(@AuthenticationPrincipal Jwt jwt) {
-        return userSynchronizer.synchronizeUser(jwt);
-    }
+
 } 

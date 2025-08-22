@@ -32,4 +32,4 @@ export function update(http: HttpClient, rootUrl: string, params: Update$Params,
   );
 }
 
-update.PATH = '/api/passports/{id}';
+update.PATH = '/api/passports/update/{id}';

@@ -17,10 +17,12 @@ private final PassportService passportService;
     public PassportController(PassportService passportService) {
         this.passportService = passportService;
     }
+
     @GetMapping
     public List<Passport> getAll() {
-        return passportService.getAll();
+        return passportService.getAllForCurrentUser();
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Passport> getById(@PathVariable Long id) {
@@ -42,7 +44,7 @@ private final PassportService passportService;
         return ResponseEntity.ok(passportService.update(id, passport));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!passportService.getById(id).isPresent()) {
             return ResponseEntity.notFound().build();

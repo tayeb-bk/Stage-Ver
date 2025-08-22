@@ -6,8 +6,8 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
+import { VisaRequestControllerService } from './services/visa-request-controller.service';
 import { PassportControllerService } from './services/passport-controller.service';
-import { ProfileControllerService } from './services/profile-controller.service';
 import { AuthControllerService } from './services/auth-controller.service';
 
 /**
@@ -18,8 +18,8 @@ import { AuthControllerService } from './services/auth-controller.service';
   exports: [],
   declarations: [],
   providers: [
+    VisaRequestControllerService,
     PassportControllerService,
-    ProfileControllerService,
     AuthControllerService,
     ApiConfiguration
   ],

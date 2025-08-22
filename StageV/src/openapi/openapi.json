@@ -1,9 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Stage API",
-    "description": "Documentation de l'API Stage",
-    "version": "1.0"
+    "title": "OpenAPI definition",
+    "version": "v0"
   },
   "servers": [
     {
@@ -11,28 +10,308 @@
       "description": "Generated server url"
     }
   ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
   "paths": {
-    "/api/profile": {
-      "get": {
+    "/api/visa-requests/update/{id}": {
+      "put": {
         "tags": [
-          "profile-controller"
+          "visa-request-controller"
         ],
-        "operationId": "getProfile",
+        "operationId": "updateVisaRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VisaRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/VisaRequest"
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/passports/update/{id}": {
+      "put": {
+        "tags": [
+          "passport-controller"
+        ],
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Passport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Passport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/visa-requests/create": {
+      "post": {
+        "tags": [
+          "visa-request-controller"
+        ],
+        "operationId": "createVisaRequest",
+        "parameters": [
+          {
+            "name": "passportId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VisaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisaRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passports": {
+      "get": {
+        "tags": [
+          "passport-controller"
+        ],
+        "operationId": "getAll",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Passport"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "passport-controller"
+        ],
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Passport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Passport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/visa-requests/{id}": {
+      "get": {
+        "tags": [
+          "visa-request-controller"
+        ],
+        "operationId": "getVisaRequestById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisaRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/visa-requests/all": {
+      "get": {
+        "tags": [
+          "visa-request-controller"
+        ],
+        "operationId": "getAllVisaRequests",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VisaRequest"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passports/{id}": {
+      "get": {
+        "tags": [
+          "passport-controller"
+        ],
+        "operationId": "getById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Passport"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "passport-controller"
+        ],
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/visa-requests/delete/{id}": {
+      "delete": {
+        "tags": [
+          "visa-request-controller"
+        ],
+        "operationId": "deleteVisaRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -42,7 +321,7 @@
         "tags": [
           "auth-controller"
         ],
-        "operationId": "delete",
+        "operationId": "delete_1",
         "parameters": [
           {
             "name": "username",
@@ -70,6 +349,61 @@
   },
   "components": {
     "schemas": {
+      "Passport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "placeOfBirth": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "string"
+          },
+          "occupation": {
+            "type": "string"
+          },
+          "issuingAuthority": {
+            "type": "string"
+          },
+          "dateOfIssue": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateOfExpiry": {
+            "type": "string",
+            "format": "date"
+          },
+          "passportNumber": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "primaryPassport": {
+            "type": "boolean"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -98,13 +432,54 @@
             "type": "string"
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+      },
+      "VisaRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "missionPurpose": {
+            "type": "string"
+          },
+          "dateOfMission": {
+            "type": "string",
+            "format": "date"
+          },
+          "countryOfFirstMission": {
+            "type": "string"
+          },
+          "countryIssuingVisa": {
+            "type": "string"
+          },
+          "travelerType": {
+            "type": "string"
+          },
+          "passport": {
+            "$ref": "#/components/schemas/Passport"
+          },
+          "passportNumber": {
+            "type": "string"
+          },
+          "issueDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "expiryDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "issuingCountry": {
+            "type": "string"
+          },
+          "issuedBy": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
       }
     }
   }

@@ -1,0 +1,333 @@
+<!-- visa-request.component.html -->
+<div class="visa-request-container">
+  <!-- Header avec gradient et icône -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14,2 14,8 20,8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10,9 9,9 8,9"/>
+        </svg>
+      </div>
+      <h1>Nouvelle Demande de Visa</h1>
+      <p>Créez votre demande de visa en quelques étapes simples</p>
+    </div>
+  </div>
+
+  <!-- Messages d'alerte avec animations -->
+  <div *ngIf="successMessage" class="alert alert-success animate-in">
+    <div class="alert-icon">✓</div>
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error animate-in">
+    <div class="alert-icon">⚠</div>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- Formulaire de création avec design moderne -->
+  <div class="visa-form-section">
+    <div class="form-header">
+      <h2>Informations de la demande</h2>
+      <div class="progress-indicator">
+        <div class="step active">1</div>
+        <div class="step-line"></div>
+        <div class="step">2</div>
+      </div>
+    </div>
+
+    <!-- Sélection du passeport avec style moderne -->
+    <div class="passport-selection-card">
+      <div class="card-header">
+        <div class="passport-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h3>Sélection du Passeport</h3>
+      </div>
+      <div class="form-group">
+        <label for="passportId">Passeport ID *</label>
+        <div class="select-wrapper">
+          <select id="passportId" [(ngModel)]="passportId" name="passportId" class="form-control modern-select" required>
+            <option value="">-- Sélectionner un ID --</option>
+            <option *ngFor="let p of passports" [value]="p.id">Passeport #{{ p.id }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <form (ngSubmit)="createVisaRequest()" #visaForm="ngForm">
+
+      <!-- INFORMATIONS GÉNÉRALES avec design card moderne -->
+      <div class="form-section modern-card">
+        <div class="section-header">
+          <div class="section-icon general">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </div>
+          <h3>INFORMATIONS GÉNÉRALES</h3>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group floating-label">
+            <input
+              type="text"
+              id="missionPurpose"
+              name="missionPurpose"
+              [(ngModel)]="newVisaRequest.missionPurpose"
+              class="form-control modern-input"
+              [class.error]="fieldErrors['missionPurpose']"
+              [class.filled]="newVisaRequest.missionPurpose"
+              required>
+            <label for="missionPurpose" class="floating-label-text">Objet du déplacement *</label>
+            <div class="input-border"></div>
+            <div *ngIf="fieldErrors['missionPurpose']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['missionPurpose'] }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="travelerType" class="modern-label">Type de voyageur *</label>
+            <div class="select-wrapper">
+              <select
+                id="travelerType"
+                name="travelerType"
+                [(ngModel)]="newVisaRequest.travelerType"
+                class="form-control modern-select"
+                [class.error]="fieldErrors['travelerType']"
+                required>
+                <option value="">Sélectionner le type</option>
+                <option *ngFor="let type of travelerTypes" [value]="type">
+                  {{ getTypeLabel(type) }}
+                </option>
+              </select>
+            </div>
+            <div *ngIf="fieldErrors['travelerType']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['travelerType'] }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="dateOfMission" class="modern-label">Date du premier déplacement *</label>
+            <div class="date-wrapper">
+              <input
+                type="date"
+                id="dateOfMission"
+                name="dateOfMission"
+                [(ngModel)]="newVisaRequest.dateOfMission"
+                class="form-control modern-date"
+                [class.error]="fieldErrors['dateOfMission']"
+                required>
+            </div>
+            <div *ngIf="fieldErrors['dateOfMission']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['dateOfMission'] }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="countryOfFirstMission" class="modern-label">Pays premier déplacement *</label>
+            <div class="select-wrapper">
+              <select
+                id="countryOfFirstMission"
+                name="countryOfFirstMission"
+                [(ngModel)]="newVisaRequest.countryOfFirstMission"
+                class="form-control modern-select"
+                [class.error]="fieldErrors['countryOfFirstMission']"
+                required>
+                <option value="">Sélectionner le pays</option>
+                <option *ngFor="let country of countries" [value]="country">
+                  {{ country }}
+                </option>
+              </select>
+            </div>
+            <div *ngIf="fieldErrors['countryOfFirstMission']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['countryOfFirstMission'] }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid single-col">
+          <div class="form-group">
+            <label for="countryIssuingVisa" class="modern-label">Pays émetteur de visa *</label>
+            <div class="select-wrapper">
+              <select
+                id="countryIssuingVisa"
+                name="countryIssuingVisa"
+                [(ngModel)]="newVisaRequest.countryIssuingVisa"
+                class="form-control modern-select"
+                [class.error]="fieldErrors['countryIssuingVisa']"
+                required>
+                <option value="">Sélectionner le pays</option>
+                <option *ngFor="let country of countries" [value]="country">
+                  {{ country }}
+                </option>
+              </select>
+            </div>
+            <div *ngIf="fieldErrors['countryIssuingVisa']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['countryIssuingVisa'] }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFORMATIONS PASSEPORT avec design moderne -->
+      <div class="form-section modern-card">
+        <div class="section-header">
+          <div class="section-icon passport">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <h3>INFORMATIONS PASSEPORT</h3>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group floating-label">
+            <input
+              type="text"
+              id="passportNumber"
+              name="passportNumber"
+              [(ngModel)]="newVisaRequest.passportNumber"
+              class="form-control modern-input"
+              [class.error]="fieldErrors['passportNumber']"
+              [class.filled]="newVisaRequest.passportNumber"
+              required>
+            <label for="passportNumber" class="floating-label-text">Numéro de passeport *</label>
+            <div class="input-border"></div>
+            <div *ngIf="fieldErrors['passportNumber']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['passportNumber'] }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="issueDate" class="modern-label">Date de délivrance *</label>
+            <div class="date-wrapper">
+              <input
+                type="date"
+                id="issueDate"
+                name="issueDate"
+                [(ngModel)]="newVisaRequest.issueDate"
+                class="form-control modern-date"
+                [class.error]="fieldErrors['issueDate']"
+                required>
+            </div>
+            <div *ngIf="fieldErrors['issueDate']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['issueDate'] }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="expiryDate" class="modern-label">Date de fin de validité *</label>
+            <div class="date-wrapper">
+              <input
+                type="date"
+                id="expiryDate"
+                name="expiryDate"
+                [(ngModel)]="newVisaRequest.expiryDate"
+                class="form-control modern-date"
+                [class.error]="fieldErrors['expiryDate']"
+                required>
+            </div>
+            <div *ngIf="fieldErrors['expiryDate']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['expiryDate'] }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="issuingCountry" class="modern-label">Pays émetteur *</label>
+            <div class="select-wrapper">
+              <select
+                id="issuingCountry"
+                name="issuingCountry"
+                [(ngModel)]="newVisaRequest.issuingCountry"
+                class="form-control modern-select"
+                [class.error]="fieldErrors['issuingCountry']"
+                required>
+                <option value="">Sélectionner le pays</option>
+                <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+              </select>
+            </div>
+            <div *ngIf="fieldErrors['issuingCountry']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['issuingCountry'] }}
+            </div>
+          </div>
+
+          <div class="form-group floating-label">
+            <input
+              type="text"
+              id="issuedBy"
+              name="issuedBy"
+              [(ngModel)]="newVisaRequest.issuedBy"
+              class="form-control modern-input"
+              [class.error]="fieldErrors['issuedBy']"
+              [class.filled]="newVisaRequest.issuedBy"
+              placeholder="Ex: Préfecture"
+              required>
+            <label for="issuedBy" class="floating-label-text">Délivré par *</label>
+            <div class="input-border"></div>
+            <div *ngIf="fieldErrors['issuedBy']" class="error-message">
+              <span class="error-icon">⚠</span>
+              {{ fieldErrors['issuedBy'] }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons modernes avec animations -->
+      <div class="form-actions modern-actions">
+        <button type="submit" class="btn btn-primary modern-btn primary-glow">
+          <span class="btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </span>
+          Créer la demande
+        </button>
+
+        <button type="button" class="btn btn-secondary modern-btn" (click)="goBackToList()">
+          <span class="btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </span>
+          Retour à la liste
+        </button>
+
+        <button type="button" class="btn btn-info modern-btn debug-btn" (click)="debugForm()">
+          <span class="btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </span>
+          Debug
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

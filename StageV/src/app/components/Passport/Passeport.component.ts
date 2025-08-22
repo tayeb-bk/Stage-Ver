@@ -132,6 +132,18 @@ export class PasseportComponent implements OnInit {
           this.fieldErrors[fieldName] = 'Autorité obligatoire (min 3 caractères)';
         }
         break;
+      case 'passportNumber':
+        if (!value || value <= 0) {
+          this.fieldErrors[fieldName] = 'Le numéro de passeport est obligatoire et doit être positif';
+        }
+        break;
+
+      case 'occupation':
+        if (value && value.trim().length > 100) {
+          this.fieldErrors[fieldName] = 'La profession ne doit pas dépasser 100 caractères';
+        }
+        break;
+
     }
   }
 
@@ -150,6 +162,9 @@ export class PasseportComponent implements OnInit {
     this.validateField('dateOfIssue', this.newPassport.dateOfIssue);
     this.validateField('dateOfExpiry', this.newPassport.dateOfExpiry);
     this.validateField('issuingAuthority', this.newPassport.issuingAuthority);
+    this.validateField('passportNumber', this.newPassport.passportNumber);
+    this.validateField('occupation', this.newPassport.occupation);
+
 
     return Object.keys(this.fieldErrors).length === 0;
   }

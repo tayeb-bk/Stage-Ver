@@ -1,0 +1,156 @@
+<!-- visa-liste.component.html -->
+<div class="visa-liste-container">
+  <!-- En-tête -->
+  <div class="header-section">
+    <h1>Liste des demandes de visa</h1>
+    <div class="header-actions">
+      <button class="btn btn-success" (click)="goToCreateVisa()">
+        ➕ Nouvelle demande
+      </button>
+      <button class="btn btn-primary" (click)="refreshList()" [disabled]="loading">
+        <span *ngIf="loading">⏳</span>
+        <span *ngIf="!loading">🔄</span>
+        {{ loading ? 'Chargement...' : 'Actualiser' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages d'alerte -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Section des filtres -->
+  <div class="filters-section">
+    <h3>Filtres</h3>
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="statusFilter">Statut</label>
+        <select id="statusFilter" [(ngModel)]="statusFilter" class="form-control">
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="travelerTypeFilter">Type de voyageur</label>
+        <select id="travelerTypeFilter" [(ngModel)]="travelerTypeFilter" class="form-control">
+          <option *ngFor="let option of travelerTypeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="countryFilter">Pays (recherche)</label>
+        <input
+          type="text"
+          id="countryFilter"
+          [(ngModel)]="countryFilter"
+          placeholder="Rechercher par pays..."
+          class="form-control">
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          Effacer les filtres
+        </button>
+        <button class="btn btn-info" (click)="debugInfo()">
+          Debug
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compteur de résultats -->
+  <div class="results-count">
+    <p>
+      <strong>{{ filteredVisaRequests.length }}</strong> demande(s) affichée(s)
+      sur <strong>{{ visaRequests.length }}</strong> au total
+    </p>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-indicator">
+    <div class="spinner"></div>
+    <p>Chargement des demandes de visa...</p>
+  </div>
+
+  <!-- Liste des demandes -->
+  <div *ngIf="!loading" class="visa-list-section">
+    <!-- Aucune donnée -->
+    <div *ngIf="filteredVisaRequests.length === 0 && visaRequests.length === 0" class="no-data">
+      <div class="no-data-icon">📋</div>
+      <h3>Aucune demande de visa</h3>
+      <p>Il n'y a actuellement aucune demande de visa dans le système.</p>
+    </div>
+
+    <!-- Aucun résultat pour les filtres -->
+    <div *ngIf="filteredVisaRequests.length === 0 && visaRequests.length > 0" class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <h3>Aucun résultat</h3>
+      <p>Aucune demande ne correspond aux critères de filtrage actuels.</p>
+      <button class="btn btn-secondary" (click)="clearFilters()">
+        Effacer les filtres
+      </button>
+    </div>
+
+    <!-- Table des résultats -->
+    <div *ngIf="filteredVisaRequests.length > 0" class="visa-table-container">
+      <table class="visa-table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Objet du déplacement</th>
+          <th>Date de mission</th>
+          <th>Pays de destination</th>
+          <th>Pays émetteur visa</th>
+          <th>Type voyageur</th>
+          <th>N° Passeport</th>
+          <th>Date de délivrance</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let request of filteredVisaRequests; trackBy: trackByRequestId">
+          <td>{{ request.id }}</td>
+          <td class="mission-purpose">{{ request.missionPurpose }}</td>
+          <td>{{ formatDate(request.dateOfMission!) }}</td>
+          <td>{{ request.countryOfFirstMission }}</td>
+          <td>{{ request.countryIssuingVisa }}</td>
+          <td>
+            <span class="traveler-type">{{ getTravelerTypeLabel(request.travelerType!) }}</span>
+          </td>
+          <td class="passport-number">{{ request.passportNumber }}</td>
+          <td>{{ formatDate(request.issueDate!) }}</td>
+          <td>
+              <span [class]="getStatusClass(request.status!)">
+                {{ getStatusLabel(request.status!) }}
+              </span>
+          </td>
+          <td class="actions">
+            <button
+              class="btn btn-view"
+              title="Voir les détails"
+              (click)="viewDetails(request)">
+              👁️
+            </button>
+            <button
+              class="btn btn-delete"
+              title="Supprimer"
+              (click)="deleteVisaRequest(request.id!)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

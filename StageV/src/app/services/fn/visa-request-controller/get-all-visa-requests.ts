@@ -8,27 +8,24 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { VisaRequest } from '../../models/visa-request';
 
-export interface GetProfile$Params {
+export interface GetAllVisaRequests$Params {
 }
 
-export function getProfile(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetProfile$Params,
-  context?: HttpContext
-): Observable<StrictHttpResponse<any>> {   // <-- remplace User par any
-  const rb = new RequestBuilder(rootUrl, getProfile.PATH, 'get');
+export function getAllVisaRequests(http: HttpClient, rootUrl: string, params?: GetAllVisaRequests$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<VisaRequest>>> {
+  const rb = new RequestBuilder(rootUrl, getAllVisaRequests.PATH, 'get');
   if (params) {
   }
 
   return http.request(
-    rb.build({ responseType: 'blob', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<any>;  // <-- remplace User par any
+      return r as StrictHttpResponse<Array<VisaRequest>>;
     })
   );
 }
-getProfile.PATH = '/api/profile';
+
+getAllVisaRequests.PATH = '/api/visa-requests/all';

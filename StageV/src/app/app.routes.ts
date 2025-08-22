@@ -4,6 +4,8 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import {PasseportComponent} from './components/Passport/Passeport.component';
 import {PasseportListeComponent} from './components/PasseportListe/PasseportListe.component';
+import {VisaRequestComponent} from './components/visa-request/visa-request.component';
+import { VisaListeComponent } from './components/VisaListe/visa-liste.component';
 
 export const routes: Routes = [
   {
@@ -30,6 +32,14 @@ export const routes: Routes = [
       {
         path: 'passportliste',
         component: PasseportListeComponent
+      },
+      {
+        path: 'visa-request',
+        component: VisaRequestComponent
+      },
+      {
+        path: 'visa-liste',
+        component: VisaListeComponent
       }
 
     ]

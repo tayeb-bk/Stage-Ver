@@ -9,26 +9,24 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 
-export interface GetProfile$Params {
+export interface DeleteVisaRequest$Params {
+  id: number;
 }
 
-export function getProfile(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetProfile$Params,
-  context?: HttpContext
-): Observable<StrictHttpResponse<any>> {   // <-- remplace User par any
-  const rb = new RequestBuilder(rootUrl, getProfile.PATH, 'get');
+export function deleteVisaRequest(http: HttpClient, rootUrl: string, params: DeleteVisaRequest$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, deleteVisaRequest.PATH, 'delete');
   if (params) {
+    rb.path('id', params.id, {});
   }
 
   return http.request(
-    rb.build({ responseType: 'blob', accept: '*/*', context })
+    rb.build({ responseType: 'text', accept: '*/*', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<any>;  // <-- remplace User par any
+      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
     })
   );
 }
-getProfile.PATH = '/api/profile';
+
+deleteVisaRequest.PATH = '/api/visa-requests/delete/{id}';

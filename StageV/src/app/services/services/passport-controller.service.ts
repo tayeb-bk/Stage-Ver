@@ -29,33 +29,8 @@ export class PassportControllerService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getById()` */
-  static readonly GetByIdPath = '/api/passports/{id}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getById()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getById$Response(params: GetById$Params, context?: HttpContext): Observable<StrictHttpResponse<Passport>> {
-    return getById(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getById$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getById(params: GetById$Params, context?: HttpContext): Observable<Passport> {
-    return this.getById$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Passport>): Passport => r.body)
-    );
-  }
-
   /** Path part for operation `update()` */
-  static readonly UpdatePath = '/api/passports/{id}';
+  static readonly UpdatePath = '/api/passports/update/{id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -76,31 +51,6 @@ export class PassportControllerService extends BaseService {
   update(params: Update$Params, context?: HttpContext): Observable<Passport> {
     return this.update$Response(params, context).pipe(
       map((r: StrictHttpResponse<Passport>): Passport => r.body)
-    );
-  }
-
-  /** Path part for operation `delete()` */
-  static readonly DeletePath = '/api/passports/{id}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `delete()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  delete$Response(params: Delete$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    return delete$(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `delete$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  delete(params: Delete$Params, context?: HttpContext): Observable<void> {
-    return this.delete$Response(params, context).pipe(
-      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
@@ -151,6 +101,56 @@ export class PassportControllerService extends BaseService {
   create(params: Create$Params, context?: HttpContext): Observable<Passport> {
     return this.create$Response(params, context).pipe(
       map((r: StrictHttpResponse<Passport>): Passport => r.body)
+    );
+  }
+
+  /** Path part for operation `getById()` */
+  static readonly GetByIdPath = '/api/passports/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getById()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getById$Response(params: GetById$Params, context?: HttpContext): Observable<StrictHttpResponse<Passport>> {
+    return getById(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getById$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getById(params: GetById$Params, context?: HttpContext): Observable<Passport> {
+    return this.getById$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Passport>): Passport => r.body)
+    );
+  }
+
+  /** Path part for operation `delete()` */
+  static readonly DeletePath = '/api/passports/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `delete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  delete$Response(params: Delete$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return delete$(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `delete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  delete(params: Delete$Params, context?: HttpContext): Observable<void> {
+    return this.delete$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

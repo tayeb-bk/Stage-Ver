@@ -63,8 +63,9 @@ export class PasseportListeComponent implements OnInit {
         console.error('Erreur lors de la suppression du passeport', err);
       }
     });
+  }
 
-  }goToCreate(): void {
+  goToCreate(): void {
     window.location.href = '/passport';
   }
 

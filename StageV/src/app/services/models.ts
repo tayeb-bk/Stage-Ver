@@ -4,3 +4,4 @@
 
 export type { Passport } from './models/passport';
 export type { User } from './models/user';
+export type { VisaRequest } from './models/visa-request';

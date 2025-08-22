@@ -1,0 +1,575 @@
+/* visa-request.component.css - Version moderne et attractive */
+
+:root {
+  --primary-color: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --secondary-color: #64748b;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #06b6d4;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  --gradient-success: linear-gradient(135deg, var(--success-color) 0%, #34d399 100%);
+  --gradient-error: linear-gradient(135deg, var(--error-color) 0%, #f87171 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--background);
+}
+
+.visa-request-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header avec gradient et animation */
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: white;
+  animation: slideInDown 0.8s ease-out;
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header-content h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 1rem 0;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-content p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+
+.header-icon {
+  display: inline-block;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Messages d'alerte améliorés */
+.alert {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.alert-success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(52, 211, 153, 0.9) 100%);
+  color: white;
+  box-shadow: var(--shadow-lg);
+}
+
+.alert-error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(248, 113, 113, 0.9) 100%);
+  color: white;
+  box-shadow: var(--shadow-lg);
+}
+
+.alert-icon {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.animate-in {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Formulaire principal */
+.visa-form-section {
+  max-width: 900px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.form-header h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.step {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: var(--border-color);
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background: var(--gradient-primary);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.step-line {
+  width: 60px;
+  height: 2px;
+  background: var(--border-color);
+}
+
+/* Cards pour les sections */
+.passport-selection-card,
+.modern-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  animation: slideInUp 0.6s ease-out;
+}
+
+.passport-selection-card:hover,
+.modern-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header,
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.passport-icon,
+.section-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.passport-icon {
+  background: var(--gradient-primary);
+}
+
+.section-icon.general {
+  background: linear-gradient(135deg, var(--info-color) 0%, #38bdf8 100%);
+}
+
+.section-icon.passport {
+  background: linear-gradient(135deg, var(--warning-color) 0%, #fbbf24 100%);
+}
+
+.card-header h3,
+.section-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Grille de formulaire moderne */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-grid.single-col {
+  grid-template-columns: 1fr;
+}
+
+/* Inputs avec labels flottants */
+.floating-label {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.modern-input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--surface);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.modern-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.modern-input.filled,
+.modern-input:focus {
+  padding-top: 1.5rem;
+}
+
+.floating-label-text {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  pointer-events: none;
+  background: var(--surface);
+  padding: 0 0.25rem;
+}
+
+.modern-input.filled + .floating-label-text,
+.modern-input:focus + .floating-label-text {
+  top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  transform: translateY(0);
+}
+
+.input-border {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+}
+
+.modern-input:focus + .floating-label-text + .input-border {
+  width: 100%;
+}
+
+/* Labels modernes */
+.modern-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+/* Selects et dates modernes */
+.select-wrapper,
+.date-wrapper {
+  position: relative;
+}
+
+.modern-select,
+.modern-date {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--surface);
+  transition: all 0.3s ease;
+  outline: none;
+  appearance: none;
+}
+
+.modern-select:focus,
+.modern-date:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.select-wrapper::after {
+  content: '▼';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* Messages d'erreur améliorés */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--error-color);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.error-icon {
+  font-size: 1rem;
+}
+
+.form-control.error {
+  border-color: var(--error-color);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Boutons modernes avec animations */
+.modern-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.modern-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.modern-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary.modern-btn {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.btn-primary.modern-btn:hover:not(:disabled) {
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+}
+
+.primary-glow {
+  animation: primaryGlow 2s infinite alternate;
+}
+
+@keyframes primaryGlow {
+  from { box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+  to { box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5); }
+}
+
+.btn-secondary.modern-btn {
+  background: linear-gradient(135deg, var(--secondary-color) 0%, #475569 100%);
+  color: white;
+}
+
+.btn-info.modern-btn {
+  background: linear-gradient(135deg, var(--info-color) 0%, #0891b2 100%);
+  color: white;
+}
+
+.debug-btn:hover {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0) translateY(-2px); }
+  25% { transform: translateX(-2px) translateY(-2px); }
+  75% { transform: translateX(2px) translateY(-2px); }
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Effets de hover et focus améliorés */
+.form-group {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.2s; }
+.form-group:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .visa-request-container {
+    padding: 1rem;
+  }
+
+  .header-content h1 {
+    font-size: 2rem;
+  }
+
+  .visa-form-section {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .form-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .modern-actions {
+    flex-direction: column;
+  }
+
+  .modern-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .passport-selection-card,
+  .modern-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .visa-form-section {
+    padding: 1rem;
+  }
+
+  .passport-selection-card,
+  .modern-card {
+    padding: 1rem;
+  }
+}
+
+/* Animations de chargement */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}

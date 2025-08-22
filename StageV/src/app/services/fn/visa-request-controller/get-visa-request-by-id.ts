@@ -8,18 +8,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { VisaRequest } from '../../models/visa-request';
 
-export interface GetProfile$Params {
+export interface GetVisaRequestById$Params {
+  id: number;
 }
 
-export function getProfile(
-  http: HttpClient,
-  rootUrl: string,
-  params?: GetProfile$Params,
-  context?: HttpContext
-): Observable<StrictHttpResponse<any>> {   // <-- remplace User par any
-  const rb = new RequestBuilder(rootUrl, getProfile.PATH, 'get');
+export function getVisaRequestById(http: HttpClient, rootUrl: string, params: GetVisaRequestById$Params, context?: HttpContext): Observable<StrictHttpResponse<VisaRequest>> {
+  const rb = new RequestBuilder(rootUrl, getVisaRequestById.PATH, 'get');
   if (params) {
+    rb.path('id', params.id, {});
   }
 
   return http.request(
@@ -27,8 +25,9 @@ export function getProfile(
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<any>;  // <-- remplace User par any
+      return r as StrictHttpResponse<VisaRequest>;
     })
   );
 }
-getProfile.PATH = '/api/profile';
+
+getVisaRequestById.PATH = '/api/visa-requests/{id}';

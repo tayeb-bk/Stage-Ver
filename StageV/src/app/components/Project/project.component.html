@@ -1,0 +1,193 @@
+<!-- project.component.html -->
+<div class="project-container">
+  <!-- En-tête -->
+  <div class="header-section">
+    <h2>Gestion des Projets</h2>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="refreshList()" [disabled]="loading">
+        <span *ngIf="loading">⏳</span>
+        <span *ngIf="!loading">🔄</span>
+        {{ loading ? 'Chargement...' : 'Actualiser' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages d'alerte -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Formulaire de création/modification -->
+  <div class="form-section">
+    <h3>{{ isEditing ? 'Modifier le projet' : 'Nouveau projet' }}</h3>
+    <form (ngSubmit)="saveProject()" class="project-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="projectName">Nom du projet</label>
+          <input
+            type="text"
+            id="projectName"
+            placeholder="Nom"
+            [(ngModel)]="newProject.name"
+            name="name"
+            class="form-control"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="projectCode">Code</label>
+          <input
+            type="text"
+            id="projectCode"
+            placeholder="Code"
+            [(ngModel)]="newProject.code"
+            name="code"
+            class="form-control"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="clientName">Client</label>
+          <input
+            type="text"
+            id="clientName"
+            placeholder="Client"
+            [(ngModel)]="newProject.clientname"
+            name="clientname"
+            class="form-control"
+            required />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success">
+          {{ isEditing ? 'Mettre à jour' : 'Créer' }}
+        </button>
+        <button type="button" *ngIf="isEditing" class="btn btn-secondary" (click)="onSuccess()">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Section des filtres -->
+  <div class="filters-section">
+    <h3>Filtres</h3>
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="nameFilter">Nom du projet</label>
+        <input
+          type="text"
+          id="nameFilter"
+          [(ngModel)]="nameFilter"
+          placeholder="Rechercher par nom..."
+          class="form-control">
+      </div>
+
+      <div class="filter-group">
+        <label for="codeFilter">Code</label>
+        <input
+          type="text"
+          id="codeFilter"
+          [(ngModel)]="codeFilter"
+          placeholder="Rechercher par code..."
+          class="form-control">
+      </div>
+
+      <div class="filter-group">
+        <label for="clientFilter">Client</label>
+        <input
+          type="text"
+          id="clientFilter"
+          [(ngModel)]="clientFilter"
+          placeholder="Rechercher par client..."
+          class="form-control">
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          Effacer les filtres
+        </button>
+        <button class="btn btn-info" (click)="debugInfo()">
+          Debug
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compteur de résultats -->
+  <div class="results-count">
+    <p>
+      <strong>{{ filteredProjects.length }}</strong> projet(s) affiché(s)
+      sur <strong>{{ projects.length }}</strong> au total
+    </p>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-indicator">
+    <div class="spinner"></div>
+    <p>Chargement des projets...</p>
+  </div>
+
+  <!-- Liste des projets -->
+  <div *ngIf="!loading" class="project-list-section">
+    <!-- Aucune donnée -->
+    <div *ngIf="filteredProjects.length === 0 && projects.length === 0" class="no-data">
+      <div class="no-data-icon">📁</div>
+      <h3>Aucun projet</h3>
+      <p>Il n'y a actuellement aucun projet dans le système.</p>
+    </div>
+
+    <!-- Aucun résultat pour les filtres -->
+    <div *ngIf="filteredProjects.length === 0 && projects.length > 0" class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <h3>Aucun résultat</h3>
+      <p>Aucun projet ne correspond aux critères de filtrage actuels.</p>
+      <button class="btn btn-secondary" (click)="clearFilters()">
+        Effacer les filtres
+      </button>
+    </div>
+
+    <!-- Table des résultats -->
+    <div *ngIf="filteredProjects.length > 0" class="project-table-container">
+      <table class="project-table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Code</th>
+          <th>Client</th>
+          <th>Missions</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let project of filteredProjects; trackBy: trackByProjectId">
+          <td>{{ project.id }}</td>
+          <td class="project-name">{{ project.name }}</td>
+          <td class="project-code">{{ project.code }}</td>
+          <td class="client-name">{{ project.clientname }}</td>
+          <td class="missions-count">
+            <span class="badge">{{ missionsCount[project.id!] || 0 }}</span>
+          </td>
+          <td class="actions">
+            <button
+              class="btn btn-edit"
+              title="Modifier"
+              (click)="editProject(project)">
+              ✏️
+            </button>
+            <button
+              class="btn btn-delete"
+              title="Supprimer"
+              (click)="deleteProject(project.id!)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

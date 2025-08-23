@@ -6,6 +6,8 @@ import {PasseportComponent} from './components/Passport/Passeport.component';
 import {PasseportListeComponent} from './components/PasseportListe/PasseportListe.component';
 import {VisaRequestComponent} from './components/visa-request/visa-request.component';
 import { VisaListeComponent } from './components/VisaListe/visa-liste.component';
+import {ProjectComponent} from './components/Project/project.component';
+import {MissionComponent} from './components/Mission/mission.component';
 
 export const routes: Routes = [
   {
@@ -40,6 +42,13 @@ export const routes: Routes = [
       {
         path: 'visa-liste',
         component: VisaListeComponent
+      },
+      {
+        path: 'project',
+        component: ProjectComponent
+      },{
+        path: 'mission',
+        component: MissionComponent
       }
 
     ]

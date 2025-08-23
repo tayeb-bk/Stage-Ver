@@ -1,0 +1,251 @@
+<!-- mission.component.html -->
+<div class="mission-container">
+  <!-- En-tête -->
+  <div class="header-section">
+    <h2>Gestion des Missions</h2>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="refreshList()" [disabled]="loading">
+        <span *ngIf="loading">⏳</span>
+        <span *ngIf="!loading">🔄</span>
+        {{ loading ? 'Chargement...' : 'Actualiser' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages d'alerte -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Formulaire de création/modification -->
+  <div class="form-section">
+    <h3>{{ isEditing ? 'Modifier la mission' : 'Nouvelle mission' }}</h3>
+    <form (ngSubmit)="saveMission()" class="mission-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="missionName">Nom de la mission</label>
+          <input
+            type="text"
+            id="missionName"
+            placeholder="Nom"
+            [(ngModel)]="newMission.name"
+            name="name"
+            class="form-control"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="missionDescription">Description</label>
+          <input
+            type="text"
+            id="missionDescription"
+            placeholder="Description"
+            [(ngModel)]="newMission.description"
+            name="description"
+            class="form-control"
+            required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">Date de début</label>
+          <input
+            type="date"
+            id="startDate"
+            [(ngModel)]="newMission.startDate"
+            name="startDate"
+            class="form-control"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="endDate">Date de fin</label>
+          <input
+            type="date"
+            id="endDate"
+            [(ngModel)]="newMission.endDate"
+            name="endDate"
+            class="form-control"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="projectSelect">Projet</label>
+          <select
+            id="projectSelect"
+            [(ngModel)]="newMission.project"
+            name="project"
+            class="form-control"
+            required>
+            <option [ngValue]="undefined">-- Sélectionner un projet --</option>
+            <option *ngFor="let project of projects" [ngValue]="project">
+              {{ project.name }} ({{ project.code }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success">
+          💾 {{ isEditing ? 'Mettre à jour' : 'Créer' }}
+        </button>
+        <button type="button" *ngIf="isEditing" class="btn btn-secondary" (click)="onSuccess()">
+          ❌ Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Section des filtres -->
+  <div class="filters-section">
+    <h3>Filtres</h3>
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="nameFilter">Nom de la mission</label>
+        <input
+          type="text"
+          id="nameFilter"
+          [(ngModel)]="nameFilter"
+          placeholder="Rechercher par nom..."
+          class="form-control">
+      </div>
+
+      <div class="filter-group">
+        <label for="descriptionFilter">Description</label>
+        <input
+          type="text"
+          id="descriptionFilter"
+          [(ngModel)]="descriptionFilter"
+          placeholder="Rechercher dans la description..."
+          class="form-control">
+      </div>
+
+      <div class="filter-group">
+        <label for="projectFilter">Projet</label>
+        <input
+          type="text"
+          id="projectFilter"
+          [(ngModel)]="projectFilter"
+          placeholder="Rechercher par projet..."
+          class="form-control">
+      </div>
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="statusFilter">Statut</label>
+        <select id="statusFilter" [(ngModel)]="statusFilter" class="form-control">
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="dateRangeFilter">Période</label>
+        <select id="dateRangeFilter" [(ngModel)]="dateRangeFilter" class="form-control">
+          <option *ngFor="let option of dateRangeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          Effacer les filtres
+        </button>
+        <button class="btn btn-info" (click)="debugInfo()">
+          Debug
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compteur de résultats -->
+  <div class="results-count">
+    <p>
+      <strong>{{ filteredMissions.length }}</strong> mission(s) affichée(s)
+      sur <strong>{{ missions.length }}</strong> au total
+    </p>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-indicator">
+    <div class="spinner"></div>
+    <p>Chargement des missions...</p>
+  </div>
+
+  <!-- Liste des missions -->
+  <div *ngIf="!loading" class="mission-list-section">
+    <!-- Aucune donnée -->
+    <div *ngIf="filteredMissions.length === 0 && missions.length === 0" class="no-data">
+      <div class="no-data-icon">📋</div>
+      <h3>Aucune mission</h3>
+      <p>Il n'y a actuellement aucune mission dans le système.</p>
+    </div>
+
+    <!-- Aucun résultat pour les filtres -->
+    <div *ngIf="filteredMissions.length === 0 && missions.length > 0" class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <h3>Aucun résultat</h3>
+      <p>Aucune mission ne correspond aux critères de filtrage actuels.</p>
+      <button class="btn btn-secondary" (click)="clearFilters()">
+        Effacer les filtres
+      </button>
+    </div>
+
+    <!-- Table des résultats -->
+    <div *ngIf="filteredMissions.length > 0" class="mission-table-container">
+      <table class="mission-table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Description</th>
+          <th>Projet</th>
+          <th>Début</th>
+          <th>Fin</th>
+          <th>Durée</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let mission of filteredMissions; trackBy: trackByMissionId">
+          <td>{{ mission.id }}</td>
+          <td class="mission-name">{{ mission.name }}</td>
+          <td class="mission-description">{{ mission.description }}</td>
+          <td class="project-info">
+            <div class="project-name">{{ mission.project?.name }}</div>
+            <div class="project-code">{{ mission.project?.code }}</div>
+          </td>
+          <td>{{ formatDate(mission.startDate!) }}</td>
+          <td>{{ formatDate(mission.endDate!) }}</td>
+          <td class="mission-duration">{{ getMissionDuration(mission) }}</td>
+          <td>
+            <span [class]="getStatusClass(getMissionStatus(mission))">
+              {{ getStatusLabel(getMissionStatus(mission)) }}
+            </span>
+          </td>
+          <td class="actions">
+            <button
+              class="btn btn-edit"
+              title="Modifier"
+              (click)="editMission(mission)">
+              ✏️
+            </button>
+            <button
+              class="btn btn-delete"
+              title="Supprimer"
+              (click)="deleteMission(mission.id!)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

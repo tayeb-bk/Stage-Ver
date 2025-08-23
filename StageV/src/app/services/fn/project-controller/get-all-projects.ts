@@ -8,24 +8,24 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { VisaRequest } from '../../models/visa-request';
+import { Project } from '../../models/project';
 
-export interface GetAllVisaRequests$Params {
+export interface GetAllProjects$Params {
 }
 
-export function getAllVisaRequests(http: HttpClient, rootUrl: string, params?: GetAllVisaRequests$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<VisaRequest>>> {
-  const rb = new RequestBuilder(rootUrl, getAllVisaRequests.PATH, 'get');
+export function getAllProjects(http: HttpClient, rootUrl: string, params?: GetAllProjects$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Project>>> {
+  const rb = new RequestBuilder(rootUrl, getAllProjects.PATH, 'get');
   if (params) {
   }
 
   return http.request(
-    //////////rb.build({ responseType: 'json', accept: 'application/json', context })
     rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<VisaRequest>>;
+      return r as StrictHttpResponse<Array<Project>>;
     })
   );
 }
-getAllVisaRequests.PATH = '/api/visa-requests/all';
+
+getAllProjects.PATH = '/api/projects/all';

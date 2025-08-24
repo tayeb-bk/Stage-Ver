@@ -27,6 +27,18 @@ public class Mission {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Project project;
+
+
+    // ✅ Champ dérivé uniquement pour l'affichage JSON
+    @Transient
+    public String getProjectName() {
+        return project != null ? project.getName() : null;
+    }
+    @Transient
+    public String getProjectCode() {
+        return project != null ? project.getCode() : null;
+    }
+
 }

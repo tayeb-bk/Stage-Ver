@@ -8,14 +8,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { VisaRequest } from '../../models/visa-request';
+import { TravelRequest } from '../../models/travel-request';
 
-export interface GetAllVisaRequests$Params {
+export interface CreateTravelRequest$Json$Params {
+      body: TravelRequest
 }
 
-export function getAllVisaRequests(http: HttpClient, rootUrl: string, params?: GetAllVisaRequests$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<VisaRequest>>> {
-  const rb = new RequestBuilder(rootUrl, getAllVisaRequests.PATH, 'get');
+export function createTravelRequest$Json(http: HttpClient, rootUrl: string, params: CreateTravelRequest$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<TravelRequest>> {
+  const rb = new RequestBuilder(rootUrl, createTravelRequest$Json.PATH, 'post');
   if (params) {
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -23,9 +25,9 @@ export function getAllVisaRequests(http: HttpClient, rootUrl: string, params?: G
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<VisaRequest>>;
+      return r as StrictHttpResponse<TravelRequest>;
     })
   );
 }
 
-getAllVisaRequests.PATH = '/api/visa-requests/all';
+createTravelRequest$Json.PATH = '/api/travel-requests/create';

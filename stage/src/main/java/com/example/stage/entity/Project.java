@@ -25,6 +25,6 @@ public class Project {
     private String clientname;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonManagedReference
     private List<Mission> missions = new ArrayList<>();
 }

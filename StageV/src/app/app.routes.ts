@@ -8,6 +8,7 @@ import {VisaRequestComponent} from './components/visa-request/visa-request.compo
 import { VisaListeComponent } from './components/VisaListe/visa-liste.component';
 import {ProjectComponent} from './components/Project/project.component';
 import {MissionComponent} from './components/Mission/mission.component';
+import {TravelRequestComponent} from './components/travel-request/travel-request.component';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,9 @@ export const routes: Routes = [
       },{
         path: 'mission',
         component: MissionComponent
+      },{
+        path: 'travel',
+        component: TravelRequestComponent
       }
 
     ]

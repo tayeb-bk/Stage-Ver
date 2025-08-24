@@ -52,6 +52,47 @@
         }
       }
     },
+    "/api/travel-requests/update/{id}": {
+      "put": {
+        "tags": [
+          "travel-request-controller"
+        ],
+        "operationId": "updateTravelRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TravelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravelRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/projects/update/{id}": {
       "put": {
         "tags": [
@@ -216,6 +257,41 @@
         }
       }
     },
+    "/api/travel-requests/create": {
+      "post": {
+        "tags": [
+          "travel-request-controller"
+        ],
+        "operationId": "createTravelRequest",
+        "requestBody": {
+          "content": {
+            "application/json;charset=UTF-8": {
+              "schema": {
+                "$ref": "#/components/schemas/TravelRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TravelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravelRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/projects/create": {
       "post": {
         "tags": [
@@ -373,6 +449,60 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/VisaRequest"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/travel-requests/get/{id}": {
+      "get": {
+        "tags": [
+          "travel-request-controller"
+        ],
+        "operationId": "getTravelRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravelRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/travel-requests/all": {
+      "get": {
+        "tags": [
+          "travel-request-controller"
+        ],
+        "operationId": "getAllTravelRequests",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TravelRequest"
                   }
                 }
               }
@@ -572,6 +702,30 @@
           "visa-request-controller"
         ],
         "operationId": "deleteVisaRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/travel-requests/delete/{id}": {
+      "delete": {
+        "tags": [
+          "travel-request-controller"
+        ],
+        "operationId": "deleteTravelRequest",
         "parameters": [
           {
             "name": "id",
@@ -794,6 +948,12 @@
           },
           "project": {
             "$ref": "#/components/schemas/Project"
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "projectCode": {
+            "type": "string"
           }
         }
       },
@@ -818,6 +978,87 @@
             "items": {
               "$ref": "#/components/schemas/Mission"
             }
+          }
+        }
+      },
+      "TravelRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "type": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "secondaryDestination": {
+            "type": "string"
+          },
+          "objective": {
+            "type": "string"
+          },
+          "departureDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "returnDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "visaRequired": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "requester": {
+            "$ref": "#/components/schemas/User"
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project"
+          },
+          "mission": {
+            "$ref": "#/components/schemas/Mission"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ROLE_MEMBER",
+              "ROLE_PMANAGER",
+              "ROLE_OFFICER",
+              "ROLE_TMANAGER"
+            ]
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
           }
         }
       }

@@ -5,4 +5,6 @@
 export type { Mission } from './models/mission';
 export type { Passport } from './models/passport';
 export type { Project } from './models/project';
+export type { TravelRequest } from './models/travel-request';
+export type { User } from './models/user';
 export type { VisaRequest } from './models/visa-request';

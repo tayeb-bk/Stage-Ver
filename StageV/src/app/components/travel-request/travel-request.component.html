@@ -1,0 +1,116 @@
+<div class="travel-request-container">
+  <h2>Gestion des Demandes de Voyage</h2>
+
+  <!-- Messages d'alerte -->
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+  <!-- Formulaire de création / modification -->
+  <div class="form-section">
+    <h3>{{ isEditing ? 'Modifier une demande' : 'Nouvelle demande' }}</h3>
+    <form (ngSubmit)="saveTravelRequest()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="projectSelect">Projet</label>
+          <select
+            id="projectSelect"
+            [(ngModel)]="newTravelRequest.project"
+            name="project"
+            (change)="onProjectChange(newTravelRequest.project)"
+            required
+          >
+            <option [ngValue]="undefined">-- Sélectionner un projet --</option>
+            <option *ngFor="let project of projects" [ngValue]="project">
+              {{ project.name }} ({{ project.code }})
+            </option>
+          </select>
+
+        </div>
+
+        <div class="form-group">
+          <label for="missionSelect">Mission</label>
+          <select id="missionSelect" [(ngModel)]="newTravelRequest.mission" name="mission" required>
+            <option [ngValue]="undefined">-- Sélectionner une mission --</option>
+            <option *ngFor="let mission of missions" [ngValue]="mission">{{ mission.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="destination">Destination</label>
+          <input type="text" id="destination" [(ngModel)]="newTravelRequest.destination" name="destination" required />
+        </div>
+        <div class="form-group">
+          <label for="secondaryDestination">Destination secondaire</label>
+          <input type="text" id="secondaryDestination" [(ngModel)]="newTravelRequest.secondaryDestination" name="secondaryDestination" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="objective">Objectif</label>
+          <input type="text" id="objective" [(ngModel)]="newTravelRequest.objective" name="objective" required />
+        </div>
+        <div class="form-group">
+          <label for="type">Type</label>
+          <input type="text" id="type" [(ngModel)]="newTravelRequest.type" name="type" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="departureDate">Date de départ</label>
+          <input type="date" id="departureDate" [(ngModel)]="newTravelRequest.departureDate" name="departureDate" required />
+        </div>
+        <div class="form-group">
+          <label for="returnDate">Date de retour</label>
+          <input type="date" id="returnDate" [(ngModel)]="newTravelRequest.returnDate" name="returnDate" required />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success">{{ isEditing ? 'Mettre à jour' : 'Créer' }}</button>
+        <button type="button" *ngIf="isEditing" class="btn btn-secondary" (click)="resetForm()">Annuler</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tableau des demandes -->
+  <div class="table-section">
+    <h3>Liste des demandes de voyage</h3>
+    <table class="travel-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Projet</th>
+        <th>Mission</th>
+        <th>Destination</th>
+        <th>Objectif</th>
+        <th>Type</th>
+        <th>Départ</th>
+        <th>Retour</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let tr of travelRequests">
+        <td>{{ tr.id }}</td>
+        <td>{{ tr.project?.name }}</td>
+        <td>{{ tr.mission?.name }}</td>
+        <td>{{ tr.destination }}</td>
+        <td>{{ tr.objective }}</td>
+        <td>{{ tr.type }}</td>
+        <td>{{ tr.departureDate }}</td>
+        <td>{{ tr.returnDate }}</td>
+        <td>{{ tr.status }}</td>
+        <td>
+          <button class="btn btn-edit" (click)="editTravelRequest(tr)">✏️</button>
+          <button class="btn btn-delete" (click)="deleteTravelRequest(tr.id!)">🗑️</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -9,5 +9,7 @@ export interface Mission {
   id?: number;
   name?: string;
   project?: Project;
+  projectCode?: string;
+  projectName?: string;
   startDate?: string;
 }

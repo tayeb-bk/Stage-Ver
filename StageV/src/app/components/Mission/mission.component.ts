@@ -6,6 +6,7 @@ import { Project } from '../../services/models/project';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { KeycloakS } from '../../utils/keycloakService/keycloak-s';
 
 @Component({
   selector: 'app-mission',
@@ -31,7 +32,6 @@ export class MissionComponent implements OnInit {
   statusFilter: string = '';
   dateRangeFilter: string = '';
 
-  // Options pour les filtres
   statusOptions = [
     { value: '', label: 'Tous les statuts' },
     { value: 'EN_COURS', label: 'En cours' },
@@ -50,7 +50,8 @@ export class MissionComponent implements OnInit {
 
   constructor(
     private missionService: MissionControllerService,
-    private projectService: ProjectControllerService
+    private projectService: ProjectControllerService,
+    public keycloakService: KeycloakS
   ) {}
 
   ngOnInit(): void {
@@ -65,7 +66,6 @@ export class MissionComponent implements OnInit {
 
     this.missionService.getAllMissions().subscribe({
       next: (data) => {
-        console.log('Missions reçues:', data);
         this.missions = data;
         this.loading = false;
       },
@@ -76,7 +76,7 @@ export class MissionComponent implements OnInit {
     });
   }
 
-  // Charger tous les projets pour dropdown
+  // Charger tous les projets
   loadProjects(): void {
     this.projectService.getAllProjects().subscribe({
       next: (data) => this.projects = data,
@@ -84,7 +84,6 @@ export class MissionComponent implements OnInit {
     });
   }
 
-  // Rafraîchir la liste
   refreshList(): void {
     this.loadMissions();
     this.loadProjects();
@@ -92,6 +91,11 @@ export class MissionComponent implements OnInit {
 
   // Créer ou mettre à jour une mission
   saveMission(): void {
+    if (!this.keycloakService.isOfficer()) {
+      this.errorMessage = 'Action interdite : seul un OFFICER peut créer ou modifier une mission';
+      return;
+    }
+
     if (this.isEditing && this.editingId !== null) {
       this.missionService.updateMission({ id: this.editingId, body: this.newMission }).subscribe({
         next: () => {
@@ -115,15 +119,23 @@ export class MissionComponent implements OnInit {
     }
   }
 
-  // Préparer le formulaire pour modification
   editMission(mission: Mission): void {
+    if (!this.keycloakService.isOfficer()) {
+      this.errorMessage = 'Action interdite : seul un OFFICER peut modifier une mission';
+      return;
+    }
+
     this.isEditing = true;
     this.editingId = mission.id ?? null;
     this.newMission = { ...mission };
   }
 
-  // Supprimer une mission
   deleteMission(id: number): void {
+    if (!this.keycloakService.isOfficer()) {
+      this.errorMessage = 'Action interdite : seul un OFFICER peut supprimer une mission';
+      return;
+    }
+
     if (confirm('Voulez-vous vraiment supprimer cette mission ?')) {
       this.missionService.deleteMission({ id }).subscribe({
         next: () => {
@@ -138,7 +150,6 @@ export class MissionComponent implements OnInit {
     }
   }
 
-  // Réinitialiser le formulaire
   onSuccess(): void {
     this.loadMissions();
     this.newMission = { name: '', description: '', startDate: '', endDate: '', project: undefined };
@@ -147,33 +158,17 @@ export class MissionComponent implements OnInit {
     this.clearMessages();
   }
 
-  /**
-   * Obtenir les missions filtrées
-   */
   get filteredMissions(): Mission[] {
     return this.missions.filter(mission => {
-      const nameMatch = !this.nameFilter ||
-        mission.name?.toLowerCase().includes(this.nameFilter.toLowerCase());
-
-      const descriptionMatch = !this.descriptionFilter ||
-        mission.description?.toLowerCase().includes(this.descriptionFilter.toLowerCase());
-
-      const projectMatch = !this.projectFilter ||
-        mission.project?.name?.toLowerCase().includes(this.projectFilter.toLowerCase());
-
-      const statusMatch = !this.statusFilter ||
-        this.getMissionStatus(mission) === this.statusFilter;
-
-      const dateRangeMatch = !this.dateRangeFilter ||
-        this.isInDateRange(mission, this.dateRangeFilter);
-
+      const nameMatch = !this.nameFilter || mission.name?.toLowerCase().includes(this.nameFilter.toLowerCase());
+      const descriptionMatch = !this.descriptionFilter || mission.description?.toLowerCase().includes(this.descriptionFilter.toLowerCase());
+      const projectMatch = !this.projectFilter || mission.project?.name?.toLowerCase().includes(this.projectFilter.toLowerCase());
+      const statusMatch = !this.statusFilter || this.getMissionStatus(mission) === this.statusFilter;
+      const dateRangeMatch = !this.dateRangeFilter || this.isInDateRange(mission, this.dateRangeFilter);
       return nameMatch && descriptionMatch && projectMatch && statusMatch && dateRangeMatch;
     });
   }
 
-  /**
-   * Réinitialiser tous les filtres
-   */
   clearFilters(): void {
     this.nameFilter = '';
     this.descriptionFilter = '';
@@ -182,12 +177,8 @@ export class MissionComponent implements OnInit {
     this.dateRangeFilter = '';
   }
 
-  /**
-   * Obtenir le statut d'une mission basé sur les dates
-   */
   getMissionStatus(mission: Mission): string {
     if (!mission.startDate || !mission.endDate) return 'NON_DEFINI';
-
     const today = new Date();
     const startDate = new Date(mission.startDate);
     const endDate = new Date(mission.endDate);
@@ -195,13 +186,9 @@ export class MissionComponent implements OnInit {
     if (today < startDate) return 'A_VENIR';
     if (today > endDate) return 'TERMINE';
     if (today >= startDate && today <= endDate) return 'EN_COURS';
-
     return 'NON_DEFINI';
   }
 
-  /**
-   * Obtenir le libellé du statut
-   */
   getStatusLabel(status: string): string {
     switch (status) {
       case 'EN_COURS': return 'En cours';
@@ -213,9 +200,6 @@ export class MissionComponent implements OnInit {
     }
   }
 
-  /**
-   * Obtenir la classe CSS pour le statut
-   */
   getStatusClass(status: string): string {
     switch (status) {
       case 'EN_COURS': return 'status-in-progress';
@@ -227,15 +211,10 @@ export class MissionComponent implements OnInit {
     }
   }
 
-  /**
-   * Vérifier si une mission est dans la plage de dates sélectionnée
-   */
   isInDateRange(mission: Mission, range: string): boolean {
     if (!mission.startDate) return false;
-
     const today = new Date();
     const startDate = new Date(mission.startDate);
-    const endDate = mission.endDate ? new Date(mission.endDate) : null;
 
     switch (range) {
       case 'CETTE_SEMAINE':
@@ -246,40 +225,30 @@ export class MissionComponent implements OnInit {
         return startDate >= weekStart && startDate <= weekEnd;
 
       case 'CE_MOIS':
-        return startDate.getMonth() === today.getMonth() &&
-          startDate.getFullYear() === today.getFullYear();
+        return startDate.getMonth() === today.getMonth() && startDate.getFullYear() === today.getFullYear();
 
       case 'MOIS_PROCHAIN':
         const nextMonth = new Date(today);
         nextMonth.setMonth(today.getMonth() + 1);
-        return startDate.getMonth() === nextMonth.getMonth() &&
-          startDate.getFullYear() === nextMonth.getFullYear();
+        return startDate.getMonth() === nextMonth.getMonth() && startDate.getFullYear() === nextMonth.getFullYear();
 
       case 'TRIMESTRE':
         const quarter = Math.floor(today.getMonth() / 3);
         const missionQuarter = Math.floor(startDate.getMonth() / 3);
-        return missionQuarter === quarter &&
-          startDate.getFullYear() === today.getFullYear();
+        return missionQuarter === quarter && startDate.getFullYear() === today.getFullYear();
 
       default:
         return true;
     }
   }
 
-  /**
-   * Formater une date
-   */
   formatDate(dateString: string): string {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('fr-FR');
   }
 
-  /**
-   * Calculer la durée d'une mission
-   */
   getMissionDuration(mission: Mission): string {
     if (!mission.startDate || !mission.endDate) return 'Non définie';
-
     const start = new Date(mission.startDate);
     const end = new Date(mission.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
@@ -291,47 +260,29 @@ export class MissionComponent implements OnInit {
     return `${Math.round(diffDays / 365)} an(s)`;
   }
 
-  /**
-   * Obtenir les projets uniques pour suggestions
-   */
   get uniqueProjects(): Project[] {
     return this.projects.filter((project, index, self) =>
       index === self.findIndex(p => p.name === project.name)
     );
   }
 
-  /**
-   * Gestion des erreurs
-   */
+  canEdit(): boolean {
+    return this.keycloakService.isOfficer();
+  }
+
   private handleError(error: HttpErrorResponse, defaultMessage: string): void {
     console.error('Erreur HTTP:', error);
-
     switch (error.status) {
-      case 400:
-        this.errorMessage = 'Requête invalide. Vérifiez les données envoyées.';
-        break;
-      case 401:
-        this.errorMessage = 'Non authentifié. Veuillez vous reconnecter.';
-        break;
-      case 403:
-        this.errorMessage = 'Accès refusé. Vous n\'avez pas les permissions nécessaires.';
-        break;
-      case 404:
-        this.errorMessage = 'Ressource non trouvée.';
-        break;
-      case 500:
-        this.errorMessage = 'Erreur serveur interne. Veuillez réessayer plus tard.';
-        break;
-      default:
-        this.errorMessage = defaultMessage;
+      case 400: this.errorMessage = 'Requête invalide. Vérifiez les données envoyées.'; break;
+      case 401: this.errorMessage = 'Non authentifié. Veuillez vous reconnecter.'; break;
+      case 403: this.errorMessage = 'Accès refusé. Vous n\'avez pas les permissions nécessaires.'; break;
+      case 404: this.errorMessage = 'Ressource non trouvée.'; break;
+      case 500: this.errorMessage = 'Erreur serveur interne. Veuillez réessayer plus tard.'; break;
+      default: this.errorMessage = defaultMessage;
     }
-
     this.clearMessages();
   }
 
-  /**
-   * Effacer les messages après un délai
-   */
   private clearMessages(): void {
     setTimeout(() => {
       this.successMessage = null;
@@ -339,16 +290,10 @@ export class MissionComponent implements OnInit {
     }, 4000);
   }
 
-  /**
-   * TrackBy function pour optimiser les performances de *ngFor
-   */
   trackByMissionId(index: number, item: Mission): number {
     return item.id || index;
   }
 
-  /**
-   * Méthode pour déboguer (utile en développement)
-   */
   debugInfo(): void {
     console.log('=== DEBUG MISSION LISTE ===');
     console.log('Total missions:', this.missions.length);

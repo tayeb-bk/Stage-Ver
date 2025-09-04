@@ -14,6 +14,22 @@
   color: #2c3e50;
 }
 
+/* Bouton retour */
+.back-btn {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.back-btn:hover {
+  background-color: #7f8c8d;
+}
+
 /* Message de succès */
 .success-message {
   background-color: #d4edda;
@@ -91,6 +107,35 @@
   box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important;
 }
 
+/* NOUVEAUX STYLES - Champs avec avertissement d'expiration */
+.warning-field {
+  border-color: #ff9800 !important;
+  background-color: #fff3e0 !important;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.15) !important;
+  animation: warningPulse 2s ease-in-out infinite;
+}
+
+.warning-field:focus {
+  border-color: #f57c00 !important;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.25) !important;
+}
+
+/* Animation pour attirer l'attention sur les champs d'avertissement */
+@keyframes warningPulse {
+  0% {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.15);
+  }
+  50% {
+    border-color: #f57c00;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.25);
+  }
+  100% {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.15);
+  }
+}
+
 /* Messages d'erreur sous chaque champ */
 .error-message {
   background-color: #f8d7da;
@@ -109,6 +154,57 @@
   margin-right: 6px;
   font-size: 14px;
   color: #dc3545;
+}
+
+/* NOUVEAUX STYLES - Message d'avertissement (différent du message d'erreur) */
+.warning-message {
+  background-color: #fff3e0 !important;
+  color: #e65100 !important;
+  border: 1px solid #ffb74d !important;
+  border-left: 4px solid #ff9800 !important;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 5px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  animation: slideDown 0.3s ease-out;
+}
+
+.warning-message .warning-icon {
+  margin-right: 6px;
+  font-size: 16px;
+  color: #ff9800;
+}
+
+/* Indicateur de jours restants */
+.days-remaining {
+  font-weight: bold;
+  color: #d84315;
+  font-size: 0.9em;
+  margin-left: 8px;
+}
+
+/* Message informatif additionnel pour les expirations proches */
+.info-message {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #1565c0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.info-icon {
+  font-size: 14px;
+  color: #2196f3;
+  flex-shrink: 0;
 }
 
 @keyframes slideDown {
@@ -170,19 +266,20 @@
     padding: 12px;
     font-size: 16px; /* Évite le zoom sur mobile */
   }
-}
-.back-btn {
-  background-color: #95a5a6;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
 
-.back-btn:hover {
-  background-color: #7f8c8d;
-}
+  /* Ajustements responsive pour les messages d'alerte */
+  .info-message {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
 
+  .warning-message,
+  .error-message {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .days-remaining {
+    font-size: 0.8em;
+  }
+}

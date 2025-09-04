@@ -33,7 +33,7 @@ public class TravelRequest {
     private int version;
 
     // Relation optionnelle avec User (nullable)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = true)
     private User requester;
 

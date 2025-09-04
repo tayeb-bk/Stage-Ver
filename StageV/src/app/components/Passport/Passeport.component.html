@@ -177,6 +177,7 @@
       </div>
     </div>
 
+    <!-- Section pour la date d'expiration avec alerte visuelle -->
     <div class="form-group">
       <label for="dateOfExpiry">Date d'expiration <span class="required">*</span></label>
       <input
@@ -187,9 +188,30 @@
         (change)="validateField('dateOfExpiry', newPassport.dateOfExpiry)"
         required
         [class.error-field]="hasFieldError('dateOfExpiry')"
+        [class.warning-field]="isExpiringWithinSixMonths('dateOfExpiry')"
       />
-      <div *ngIf="hasFieldError('dateOfExpiry')" class="error-message">
-        <i class="error-icon">⚠</i> {{ getFieldError('dateOfExpiry') }}
+
+      <!-- Message d'erreur ou d'avertissement -->
+      <div *ngIf="hasFieldError('dateOfExpiry')"
+           class="error-message"
+           [class.warning-message]="isExpiringWithinSixMonths('dateOfExpiry')">
+        <i class="error-icon"
+           [class]="isExpiringWithinSixMonths('dateOfExpiry') ? 'warning-icon' : 'error-icon'">
+          {{ isExpiringWithinSixMonths('dateOfExpiry') ? '⚠️' : '⚠' }}
+        </i>
+        {{ getFieldError('dateOfExpiry') }}
+
+        <!-- Affichage du nombre de jours restants si applicable -->
+        <span *ngIf="isExpiringWithinSixMonths('dateOfExpiry') && getDaysUntilExpiry() !== null"
+              class="days-remaining">
+      ({{ getDaysUntilExpiry() }} jours restants)
+    </span>
+      </div>
+
+      <!-- Message informatif additionnel pour les expirations proches -->
+      <div *ngIf="isExpiringWithinSixMonths('dateOfExpiry')" class="info-message">
+        <i class="info-icon">ℹ️</i>
+        Recommandation : Renouvelez le passeport dès que possible pour éviter les problèmes de voyage.
       </div>
     </div>
 

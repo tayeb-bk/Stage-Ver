@@ -4,6 +4,7 @@ import { Project } from '../../services/models/project';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { KeycloakS } from '../../utils/keycloakService/keycloak-s';
 
 @Component({
   selector: 'app-project',
@@ -27,10 +28,12 @@ export class ProjectComponent implements OnInit {
   codeFilter: string = '';
   clientFilter: string = '';
 
-  constructor(private projectService: ProjectControllerService) {}
+  constructor(
+    private projectService: ProjectControllerService,
+    public keycloakService: KeycloakS
+  ) {}
 
   ngOnInit(): void {
-    console.log('ProjectComponent chargé');
     this.loadProjects();
     this.loadMissionsCount();
   }
@@ -42,7 +45,6 @@ export class ProjectComponent implements OnInit {
 
     this.projectService.getAllProjects().subscribe({
       next: (data) => {
-        console.log('Projets reçus :', data);
         this.projects = data;
         this.loading = false;
       },
@@ -74,6 +76,11 @@ export class ProjectComponent implements OnInit {
 
   // Créer ou mettre à jour un projet
   saveProject(): void {
+    if (!this.keycloakService.isOfficer()) {
+      this.errorMessage = 'Action interdite : seul un OFFICER peut créer ou modifier un projet';
+      return;
+    }
+
     if (this.isEditing && this.editingId !== null) {
       this.projectService.updateProject({ id: this.editingId, body: this.newProject }).subscribe({
         next: () => {
@@ -99,6 +106,11 @@ export class ProjectComponent implements OnInit {
 
   // Préparer le formulaire pour modification
   editProject(project: Project): void {
+    if (!this.keycloakService.isOfficer()) {
+      this.errorMessage = 'Action interdite : seul un OFFICER peut modifier un projet';
+      return;
+    }
+
     this.isEditing = true;
     this.editingId = project.id ?? null;
     this.newProject = { ...project };
@@ -106,6 +118,11 @@ export class ProjectComponent implements OnInit {
 
   // Supprimer un projet
   deleteProject(id: number): void {
+    if (!this.keycloakService.isOfficer()) {
+      this.errorMessage = 'Action interdite : seul un OFFICER peut supprimer un projet';
+      return;
+    }
+
     if (confirm('Voulez-vous vraiment supprimer ce projet ?')) {
       this.projectService.deleteProject({ id }).subscribe({
         next: () => {
@@ -168,6 +185,13 @@ export class ProjectComponent implements OnInit {
   }
 
   /**
+   * Vérification des droits pour activer boutons
+   */
+  canEdit(): boolean {
+    return this.keycloakService.isOfficer();
+  }
+
+  /**
    * Gestion des erreurs
    */
   private handleError(error: HttpErrorResponse, defaultMessage: string): void {
@@ -214,7 +238,7 @@ export class ProjectComponent implements OnInit {
   }
 
   /**
-   * Méthode pour déboguer (utile en développement)
+   * Méthode pour déboguer
    */
   debugInfo(): void {
     console.log('=== DEBUG PROJET LISTE ===');

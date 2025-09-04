@@ -117,12 +117,30 @@ export class PasseportComponent implements OnInit {
       case 'dateOfExpiry':
         if (!value) {
           this.fieldErrors[fieldName] = 'La date d\'expiration est obligatoire';
-        } else if (this.newPassport.dateOfIssue) {
+        } else {
           const expiryDate = new Date(value);
-          const issueDate = new Date(this.newPassport.dateOfIssue);
+          const today = new Date();
 
-          if (expiryDate <= issueDate) {
-            this.fieldErrors[fieldName] = 'Doit être après la date de délivrance';
+          // Vérifier si la date est dans le passé
+          if (expiryDate < today) {
+            this.fieldErrors[fieldName] = 'Le passeport est déjà expiré';
+          } else {
+            // Calculer la date dans 6 mois à partir d'aujourd'hui
+            const sixMonthsFromNow = new Date();
+            sixMonthsFromNow.setMonth(today.getMonth() + 6);
+
+            // Si la date d'expiration est dans moins de 6 mois
+            if (expiryDate <= sixMonthsFromNow) {
+              this.fieldErrors[fieldName] = '⚠️ ATTENTION: Ce passeport expire dans moins de 6 mois !';
+            }
+          }
+
+          // Vérifier aussi que c'est après la date de délivrance
+          if (this.newPassport.dateOfIssue) {
+            const issueDate = new Date(this.newPassport.dateOfIssue);
+            if (expiryDate <= issueDate) {
+              this.fieldErrors[fieldName] = 'Doit être après la date de délivrance';
+            }
           }
         }
         break;
@@ -145,6 +163,29 @@ export class PasseportComponent implements OnInit {
         break;
 
     }
+  }
+  isExpiringWithinSixMonths(fieldName: string): boolean {
+    if (fieldName === 'dateOfExpiry' && this.newPassport.dateOfExpiry) {
+      const expiryDate = new Date(this.newPassport.dateOfExpiry);
+      const today = new Date();
+      const sixMonthsFromNow = new Date();
+      sixMonthsFromNow.setMonth(today.getMonth() + 6);
+
+      return expiryDate <= sixMonthsFromNow && expiryDate >= today;
+    }
+    return false;
+  }
+
+// Méthode pour obtenir le nombre de jours restants avant expiration
+  getDaysUntilExpiry(): number | null {
+    if (this.newPassport.dateOfExpiry) {
+      const expiryDate = new Date(this.newPassport.dateOfExpiry);
+      const today = new Date();
+      const diffTime = expiryDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    }
+    return null;
   }
 
   // Validation complète du formulaire

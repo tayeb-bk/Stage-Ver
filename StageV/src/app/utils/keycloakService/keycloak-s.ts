@@ -12,9 +12,9 @@ export class KeycloakS {
   get keycloak() {
     if (!this._keycloak) {
       this._keycloak = new Keycloak({
-        url: 'http://localhost:8080', // ← adapte ici si besoin
-        realm: 'stage-realm',              // ← adapte ici
-        clientId: 'stage-client',          // ← adapte ici
+        url: 'http://localhost:8080',
+        realm: 'stage-realm',
+        clientId: 'stage-client',
       });
     }
     return this._keycloak;
@@ -52,5 +52,40 @@ export class KeycloakS {
 
   accountManagement() {
     return this.keycloak.accountManagement();
+  }
+  /**
+   * Récupérer tous les rôles de l'utilisateur
+   */
+  get roles(): string[] {
+    const realmRoles = this.keycloak.tokenParsed?.realm_access?.roles || [];
+    const clientRoles = Object.values(this.keycloak.tokenParsed?.resource_access || {})
+      .flatMap((r: any) => r.roles || []);
+    return Array.from(new Set([...realmRoles, ...clientRoles]));
+  }
+
+  /**
+   * Vérifie si l'utilisateur a un rôle précis
+   */
+  hasRole(role: string): boolean {
+    return this.roles.includes(role);
+  }
+
+  isOfficer(): boolean {
+    return this.hasRole('ROLE_OFFICER');
+  }
+
+  isPManager(): boolean {
+    return this.hasRole('ROLE_PMANAGER');
+  }
+
+  isTManager(): boolean {
+    return this.hasRole('ROLE_TMANAGER');
+  }
+
+  isMember(): boolean {
+    return this.hasRole('ROLE_MEMBER');
+  }
+  isHeadMarket(): boolean {
+    return this.roles.includes('ROLE_HEAD_MARKET'); // ✅ ajout pour Step 2
   }
 }

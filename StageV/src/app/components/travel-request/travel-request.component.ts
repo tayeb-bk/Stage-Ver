@@ -8,6 +8,15 @@ import { Project } from '../../services/models/project';
 import { Mission } from '../../services/models/mission';
 import { HttpErrorResponse } from '@angular/common/http';
 
+interface TravelRequestFilters {
+  project: string;
+  mission: string;
+  destination: string;
+  status: string;
+  dateFrom: string;
+  dateTo: string;
+}
+
 @Component({
   selector: 'app-travel-request',
   standalone: true,
@@ -18,6 +27,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class TravelRequestComponent implements OnInit {
 
   travelRequests: TravelRequest[] = [];
+  filteredTravelRequests: TravelRequest[] = [];
   projects: Project[] = [];
   missions: Mission[] = [];
 
@@ -27,6 +37,16 @@ export class TravelRequestComponent implements OnInit {
   loading: boolean = false;
   successMessage: string = '';
   errorMessage: string = '';
+
+  // Filtres
+  filters: TravelRequestFilters = {
+    project: '',
+    mission: '',
+    destination: '',
+    status: '',
+    dateFrom: '',
+    dateTo: ''
+  };
 
   constructor(
     private travelService: TravelRequestControllerService,
@@ -43,6 +63,7 @@ export class TravelRequestComponent implements OnInit {
     this.travelService.getAllTravelRequests().subscribe({
       next: (data: TravelRequest[]) => {
         this.travelRequests = data;
+        this.filteredTravelRequests = [...data]; // Initialiser la liste filtrée
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -57,15 +78,12 @@ export class TravelRequestComponent implements OnInit {
     });
   }
 
-  // Pas besoin de selectedProjectId
   onProjectChange(project: Project | undefined): void {
     this.newTravelRequest.mission = undefined;
     this.missions = project?.missions || [];
   }
 
-
   saveTravelRequest(): void {
-    // Toujours générer le status "Pending"
     this.newTravelRequest.status = 'Pending';
 
     if (this.isEditing && this.newTravelRequest.id) {
@@ -75,6 +93,7 @@ export class TravelRequestComponent implements OnInit {
             this.successMessage = 'Demande de voyage mise à jour.';
             this.resetForm();
             this.loadAllData();
+            this.clearMessages();
           },
           error: () => this.errorMessage = 'Erreur lors de la mise à jour.'
         });
@@ -85,6 +104,7 @@ export class TravelRequestComponent implements OnInit {
             this.successMessage = 'Demande de voyage créée.';
             this.resetForm();
             this.loadAllData();
+            this.clearMessages();
           },
           error: () => this.errorMessage = 'Erreur lors de la création.'
         });
@@ -98,13 +118,16 @@ export class TravelRequestComponent implements OnInit {
   }
 
   deleteTravelRequest(id: number): void {
-    this.travelService.deleteTravelRequest({ id }).subscribe({
-      next: () => {
-        this.successMessage = 'Demande supprimée.';
-        this.loadAllData();
-      },
-      error: () => this.errorMessage = 'Erreur lors de la suppression.'
-    });
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette demande de voyage ?')) {
+      this.travelService.deleteTravelRequest({ id }).subscribe({
+        next: () => {
+          this.successMessage = 'Demande supprimée.';
+          this.loadAllData();
+          this.clearMessages();
+        },
+        error: () => this.errorMessage = 'Erreur lors de la suppression.'
+      });
+    }
   }
 
   resetForm(): void {
@@ -113,4 +136,82 @@ export class TravelRequestComponent implements OnInit {
     this.missions = [];
   }
 
+  // ======== MÉTHODES DE FILTRAGE ========
+
+  applyFilters(): void {
+    this.filteredTravelRequests = this.travelRequests.filter(tr => {
+      // Filtre par projet
+      if (this.filters.project && tr.project?.name !== this.filters.project) {
+        return false;
+      }
+
+      // Filtre par mission
+      if (this.filters.mission && tr.mission?.name !== this.filters.mission) {
+        return false;
+      }
+
+      // Filtre par destination (recherche insensible à la casse)
+      if (this.filters.destination &&
+        !tr.destination?.toLowerCase().includes(this.filters.destination.toLowerCase())) {
+        return false;
+      }
+
+      // Filtre par statut
+      if (this.filters.status && tr.status !== this.filters.status) {
+        return false;
+      }
+
+      // Filtre par date de départ (à partir de)
+      if (this.filters.dateFrom && tr.departureDate) {
+        const trDate = new Date(tr.departureDate);
+        const filterDate = new Date(this.filters.dateFrom);
+        if (trDate < filterDate) {
+          return false;
+        }
+      }
+
+      // Filtre par date de départ (jusqu'à)
+      if (this.filters.dateTo && tr.departureDate) {
+        const trDate = new Date(tr.departureDate);
+        const filterDate = new Date(this.filters.dateTo);
+        if (trDate > filterDate) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
+
+  clearFilters(): void {
+    this.filters = {
+      project: '',
+      mission: '',
+      destination: '',
+      status: '',
+      dateFrom: '',
+      dateTo: ''
+    };
+    this.filteredTravelRequests = [...this.travelRequests];
+  }
+
+  getAllMissions(): Mission[] {
+    const allMissions: Mission[] = [];
+    this.projects.forEach(project => {
+      if (project.missions) {
+        allMissions.push(...project.missions);
+      }
+    });
+    // Éliminer les doublons basés sur le nom
+    return allMissions.filter((mission, index, self) =>
+      index === self.findIndex(m => m.name === mission.name)
+    );
+  }
+
+  private clearMessages(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+      this.errorMessage = '';
+    }, 3000);
+  }
 }

@@ -4,5 +4,6 @@ public enum Role {
     ROLE_MEMBER,
     ROLE_PMANAGER,
     ROLE_OFFICER,
-    ROLE_TMANAGER
+    ROLE_TMANAGER,
+    ROLE_HEAD_MARKET
 } 

@@ -1,0 +1,100 @@
+<div class="invoice-container">
+  <h2>📑 Gestion des Factures</h2>
+
+  <!-- Messages -->
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+  <!-- Formulaire -->
+  <div class="form-section">
+    <h3>➕ Nouvelle facture</h3>
+    <form (ngSubmit)="generateInvoice()">
+      <!-- Sélection du voyage -->
+      <label for="travelSelect">Voyage approuvé:</label>
+      <select id="travelSelect" [(ngModel)]="selectedTravelId" name="travelId" required>
+        <option *ngFor="let t of approvedTravels" [value]="t.id">
+          Voyage #{{ t.id }} - {{ t.destination }}
+          ({{ t.departureDate | date:'dd/MM/yyyy' }} → {{ t.returnDate | date:'dd/MM/yyyy' }})
+          - Créé par {{ t.requester?.firstName }} {{ t.requester?.lastName }}
+        </option>
+      </select>
+
+      <!-- Champs du billet -->
+      <label>Numéro billet:</label>
+      <input type="text" [(ngModel)]="newInvoice.ticketNumber" name="ticketNumber">
+
+      <label>Montant billet (DT):</label>
+      <input type="number" [(ngModel)]="newInvoice.ticketAmount" name="ticketAmount">
+
+      <!-- Champs de l'hôtel -->
+      <label>Nom hôtel:</label>
+      <input type="text" [(ngModel)]="newInvoice.hotelName" name="hotelName">
+
+      <label>Prix par nuitée (DT):</label>
+      <input type="number" [(ngModel)]="newInvoice.pricePerNight" name="pricePerNight">
+
+      <!-- Champs du Per diem -->
+      <label>Per Diem (DT/jour):</label>
+      <input type="number" [(ngModel)]="newInvoice.perDiemRate" name="perDiemRate">
+
+      <button type="submit" class="btn btn-success" [disabled]="!canValidate()">
+        ✅ Générer Facture
+      </button>    </form>
+  </div>
+
+  <!-- Liste -->
+  <h3>📋 Liste des factures</h3>
+  <table class="invoice-table">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Voyage</th>
+      <th>Créateur</th>
+      <th>Billet</th>
+      <th>Hôtel</th>
+      <th>Per Diem</th>
+      <th>Total</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Boucle des factures -->
+    <tr *ngFor="let inv of invoices; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>
+        {{ inv.travelRequest?.destination }}<br>
+        <small>
+          {{ inv.travelRequest?.departureDate | date:'dd/MM/yyyy' }} → {{ inv.travelRequest?.returnDate | date:'dd/MM/yyyy' }}
+        </small>
+      </td>
+      <td>
+        {{ inv.travelRequest?.requester?.firstName }} {{ inv.travelRequest?.requester?.lastName }} <br>
+        <small>{{ '@' + (inv.travelRequest?.requester?.username || 'inconnu') }}</small>
+      </td>
+      <td>{{ inv.ticketAmount || 0 }} DT <br><small>#{{ inv.ticketNumber }}</small></td>
+      <td>{{ inv.hotelTotal || 0 }} DT <br><small>{{ inv.nights }} nuits</small></td>
+      <td>{{ inv.perDiemTotal || 0 }} DT <br><small>{{ inv.travelDays }} jours</small></td>
+      <td><b>{{ inv.totalAmount || 0 }} DT</b></td>
+      <td>
+        <button class="btn btn-download"
+                (click)="downloadInvoiceFront(inv)"
+                [disabled]="!canValidate()">
+          ⬇️ Télécharger
+        </button>
+
+        <button class="btn btn-delete"
+                (click)="deleteInvoice(inv.id!)"
+                [disabled]="!canValidate()">
+          🗑️ Supprimer
+        </button>
+      </td>
+    </tr>
+
+    <!-- Aucun résultat -->
+    <tr *ngIf="invoices.length === 0">
+      <td colspan="8" class="no-data">Aucune facture générée</td>
+    </tr>
+    </tbody>
+
+  </table>
+</div>

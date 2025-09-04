@@ -1,0 +1,276 @@
+<div class="travel-validation-container">
+  <div class="header">
+    <h2>Validation des Demandes de Voyage - Étape 1</h2>
+
+    <!-- Statistiques -->
+    <div class="stats">
+      <span class="stat-item">
+        <strong>{{ getFilteredCount() }}</strong> sur <strong>{{ getTotalCount() }}</strong> demandes
+      </span>
+    </div>
+  </div>
+
+  <!-- Section des filtres -->
+  <div class="filters-container">
+    <div class="filters-header">
+      <h3>Filtres de recherche</h3>
+      <div class="filter-actions">
+        <button
+          class="btn-toggle-filters"
+          (click)="toggleAdvancedFilters()">
+          {{ showAdvancedFilters ? 'Masquer' : 'Afficher' }} les filtres avancés
+        </button>
+        <button class="btn-clear-filters" (click)="clearFilters()">
+          Effacer les filtres
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres de base -->
+    <div class="basic-filters">
+      <div class="filter-group">
+        <label for="statusFilter">Statut:</label>
+        <select
+          id="statusFilter"
+          [(ngModel)]="filters.status"
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option value="">Tous les statuts</option>
+          <option value="PENDING">En attente</option>
+          <option value="STEP1_APPROVED">Étape 1 approuvée</option>
+          <option value="STEP1_REJECTED">Étape 1 rejetée</option>
+          <option value="APPROVED">Approuvée</option>
+          <option value="REJECTED">Rejetée</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="objective">Objectif:</label>
+        <input
+          type="text"
+          id="objective"
+          [(ngModel)]="filters.objective"
+          (input)="onFilterChange()"
+          placeholder="Rechercher par objectif..."
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="destination">Destination:</label>
+        <select
+          id="destination"
+          [(ngModel)]="filters.destination"
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option value="">Toutes les destinations</option>
+          <option *ngFor="let dest of uniqueDestinations" [value]="dest">
+            {{ dest }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Filtres avancés -->
+    <div class="advanced-filters" [class.visible]="showAdvancedFilters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="secondaryDestination">Destination secondaire:</label>
+          <select
+            id="secondaryDestination"
+            [(ngModel)]="filters.secondaryDestination"
+            (change)="onFilterChange()"
+            class="filter-select">
+            <option value="">Toutes les destinations</option>
+            <option *ngFor="let dest of uniqueSecondaryDestinations" [value]="dest">
+              {{ dest }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="type">Type de voyage:</label>
+          <select
+            id="type"
+            [(ngModel)]="filters.type"
+            (change)="onFilterChange()"
+            class="filter-select">
+            <option value="">Tous les types</option>
+            <option *ngFor="let t of uniqueTypes" [value]="t">
+              {{ t }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="dateFrom">Date de départ (du):</label>
+          <input
+            type="date"
+            id="dateFrom"
+            [(ngModel)]="filters.dateFrom"
+            (change)="onFilterChange()"
+            class="filter-input">
+        </div>
+
+        <div class="filter-group">
+          <label for="dateTo">Date de départ (au):</label>
+          <input
+            type="date"
+            id="dateTo"
+            [(ngModel)]="filters.dateTo"
+            (change)="onFilterChange()"
+            class="filter-input">
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="durationMin">Durée minimale (jours):</label>
+          <input
+            type="number"
+            id="durationMin"
+            [(ngModel)]="filters.durationMin"
+            (input)="onFilterChange()"
+            class="filter-input">
+        </div>
+
+        <div class="filter-group">
+          <label for="durationMax">Durée maximale (jours):</label>
+          <input
+            type="number"
+            id="durationMax"
+            [(ngModel)]="filters.durationMax"
+            (input)="onFilterChange()"
+            class="filter-input">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    <i class="error-icon">⚠️</i>
+    {{ error }}
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Liste des demandes de voyage -->
+  <div *ngIf="!loading" class="travel-list">
+    <div *ngIf="travelRequests.length === 0" class="no-data">
+      <i class="no-data-icon">📄</i>
+      <p>Aucune demande de voyage trouvée avec les filtres actuels</p>
+      <p class="no-data-suggestion">
+        Essayez de modifier vos critères de recherche ou
+        <button class="link-button" (click)="clearFilters()">effacez tous les filtres</button>
+      </p>
+    </div>
+
+    <div *ngFor="let travel of travelRequests" class="travel-card">
+      <div class="travel-header">
+        <div class="travel-id">
+          <strong>Demande #{{ travel.id }}</strong>
+        </div>
+        <div class="travel-status {{ getStatusClass(travel.status) }}">
+          {{ getStatusText(travel.status) }}
+        </div>
+      </div>
+
+      <div class="travel-details">
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Objectif:</label>
+            <span>{{ travel.objective || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Type:</label>
+            <span>{{ travel.type || 'Non spécifié' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Destination principale:</label>
+            <span>{{ travel.destination || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Destination secondaire:</label>
+            <span>{{ travel.secondaryDestination || 'Non spécifiée' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Date de départ:</label>
+            <span>{{ formatDate(travel.departureDate) }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Date de retour:</label>
+            <span>{{ formatDate(travel.returnDate) }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Durée (jours):</label>
+            <span>{{ travel.duration || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Visa requis:</label>
+            <span>{{ travel.visaRequired ? 'Oui' : 'Non' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions de validation Step 1 -->
+      <div class="validation-actions" *ngIf="travel.status === 'PENDING'">
+        <h4>Validation Étape 1</h4>
+        <p class="validation-info">
+          Première validation de la demande de voyage. Vérifiez les informations et approuvez ou rejetez cette demande.
+        </p>
+        <div class="action-buttons">
+          <button
+            class="btn btn-approve"
+            (click)="validateStep1(travel.id, true)"
+            [disabled]="loading || !canValidate()">
+            <i class="btn-icon">✓</i>
+            Approuver Étape 1
+          </button>
+          <button
+            class="btn btn-reject"
+            (click)="validateStep1(travel.id, false)"
+            [disabled]="loading || !canValidate()">
+            <i class="btn-icon">✗</i>
+            Rejeter Étape 1
+          </button>
+        </div>
+      </div>
+
+      <!-- Message pour les demandes déjà validées -->
+      <div class="validation-completed" *ngIf="travel.status !== 'PENDING'">
+        <i class="completed-icon">
+          {{ travel.status === 'STEP1_APPROVED' ? '✅' : travel.status === 'STEP1_REJECTED' ? '❌' : '🔄' }}
+        </i>
+        <span>
+          <ng-container *ngIf="travel.status === 'STEP1_APPROVED'">
+            Étape 1 approuvée - En attente de l'étape 2
+          </ng-container>
+          <ng-container *ngIf="travel.status === 'STEP1_REJECTED'">
+            Étape 1 rejetée
+          </ng-container>
+          <ng-container *ngIf="travel.status === 'APPROVED'">
+            Demande complètement approuvée
+          </ng-container>
+          <ng-container *ngIf="travel.status === 'REJECTED'">
+            Demande rejetée définitivement
+          </ng-container>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

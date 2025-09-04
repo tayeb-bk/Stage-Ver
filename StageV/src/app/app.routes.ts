@@ -9,6 +9,11 @@ import { VisaListeComponent } from './components/VisaListe/visa-liste.component'
 import {ProjectComponent} from './components/Project/project.component';
 import {MissionComponent} from './components/Mission/mission.component';
 import {TravelRequestComponent} from './components/travel-request/travel-request.component';
+import {VisaValidationComponent} from './components/visa-validation/visa-validation.component';
+import {VisaValidationStep2Component} from './components/visa-validation-step2/visa-validation-step2.component';
+import {TravelValidationComponent} from './components/travel-validation/travel-validation.component';
+import {TravelValidationStep2Component} from './components/travel-validation-step2/travel-validation-step2.component';
+import {InvoiceComponent} from './components/Invoice/invoice.component';
 
 export const routes: Routes = [
   {
@@ -53,6 +58,22 @@ export const routes: Routes = [
       },{
         path: 'travel',
         component: TravelRequestComponent
+      },{
+        path: 'validation',
+        component: VisaValidationComponent
+      }
+      ,{
+        path: 'validation2',
+        component: VisaValidationStep2Component
+      },{
+        path: 'travelvalid',
+        component: TravelValidationComponent
+      },{
+        path: 'travelvalid2',
+        component: TravelValidationStep2Component
+      },{
+        path: 'invoice',
+        component: InvoiceComponent
       }
 
     ]

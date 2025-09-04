@@ -1,4 +1,3 @@
-<!-- mission.component.html -->
 <div class="mission-container">
   <!-- En-tête -->
   <div class="header-section">
@@ -16,7 +15,6 @@
   <div *ngIf="successMessage" class="alert alert-success">
     {{ successMessage }}
   </div>
-
   <div *ngIf="errorMessage" class="alert alert-error">
     {{ errorMessage }}
   </div>
@@ -35,7 +33,8 @@
             [(ngModel)]="newMission.name"
             name="name"
             class="form-control"
-            required />
+            required
+            [disabled]="!canEdit()" />
         </div>
         <div class="form-group">
           <label for="missionDescription">Description</label>
@@ -46,7 +45,8 @@
             [(ngModel)]="newMission.description"
             name="description"
             class="form-control"
-            required />
+            required
+            [disabled]="!canEdit()" />
         </div>
       </div>
 
@@ -59,7 +59,8 @@
             [(ngModel)]="newMission.startDate"
             name="startDate"
             class="form-control"
-            required />
+            required
+            [disabled]="!canEdit()" />
         </div>
         <div class="form-group">
           <label for="endDate">Date de fin</label>
@@ -69,7 +70,8 @@
             [(ngModel)]="newMission.endDate"
             name="endDate"
             class="form-control"
-            required />
+            required
+            [disabled]="!canEdit()" />
         </div>
         <div class="form-group">
           <label for="projectSelect">Projet</label>
@@ -78,7 +80,8 @@
             [(ngModel)]="newMission.project"
             name="project"
             class="form-control"
-            required>
+            required
+            [disabled]="!canEdit()">
             <option [ngValue]="undefined">-- Sélectionner un projet --</option>
             <option *ngFor="let project of projects" [ngValue]="project">
               {{ project.name }} ({{ project.code }})
@@ -88,10 +91,10 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-success">
+        <button type="submit" class="btn btn-success" [disabled]="!canEdit()">
           💾 {{ isEditing ? 'Mettre à jour' : 'Créer' }}
         </button>
-        <button type="button" *ngIf="isEditing" class="btn btn-secondary" (click)="onSuccess()">
+        <button type="button" *ngIf="isEditing" class="btn btn-secondary" (click)="onSuccess()" [disabled]="!canEdit()">
           ❌ Annuler
         </button>
       </div>
@@ -111,7 +114,6 @@
           placeholder="Rechercher par nom..."
           class="form-control">
       </div>
-
       <div class="filter-group">
         <label for="descriptionFilter">Description</label>
         <input
@@ -121,7 +123,6 @@
           placeholder="Rechercher dans la description..."
           class="form-control">
       </div>
-
       <div class="filter-group">
         <label for="projectFilter">Projet</label>
         <input
@@ -142,7 +143,6 @@
           </option>
         </select>
       </div>
-
       <div class="filter-group">
         <label for="dateRangeFilter">Période</label>
         <select id="dateRangeFilter" [(ngModel)]="dateRangeFilter" class="form-control">
@@ -151,7 +151,6 @@
           </option>
         </select>
       </div>
-
       <div class="filter-actions">
         <button class="btn btn-secondary" (click)="clearFilters()">
           Effacer les filtres
@@ -191,9 +190,7 @@
       <div class="no-results-icon">🔍</div>
       <h3>Aucun résultat</h3>
       <p>Aucune mission ne correspond aux critères de filtrage actuels.</p>
-      <button class="btn btn-secondary" (click)="clearFilters()">
-        Effacer les filtres
-      </button>
+      <button class="btn btn-secondary" (click)="clearFilters()">Effacer les filtres</button>
     </div>
 
     <!-- Table des résultats -->
@@ -218,8 +215,8 @@
           <td class="mission-name">{{ mission.name }}</td>
           <td class="mission-description">{{ mission.description }}</td>
           <td class="project-info">
-            <div class="project-name">{{ mission.projectName }}</div>
-            <div class="project-code">{{ mission.projectCode }}</div>
+            <div class="project-name">{{ mission.project?.name }}</div>
+            <div class="project-code">{{ mission.project?.code }}</div>
           </td>
           <td>{{ formatDate(mission.startDate!) }}</td>
           <td>{{ formatDate(mission.endDate!) }}</td>
@@ -233,13 +230,15 @@
             <button
               class="btn btn-edit"
               title="Modifier"
-              (click)="editMission(mission)">
+              (click)="editMission(mission)"
+              [disabled]="!canEdit()">
               ✏️
             </button>
             <button
               class="btn btn-delete"
               title="Supprimer"
-              (click)="deleteMission(mission.id!)">
+              (click)="deleteMission(mission.id!)"
+              [disabled]="!canEdit()">
               🗑️
             </button>
           </td>

@@ -1,0 +1,337 @@
+<div class="visa-validation-container">
+  <div class="header">
+    <h2>Validation des Demandes de Visa - Étape 2 (Finale)</h2>
+
+    <!-- Statistiques -->
+    <div class="stats">
+      <span class="stat-item">
+        <strong>{{ getFilteredCount() }}</strong> sur <strong>{{ getTotalCount() }}</strong> demandes
+      </span>
+    </div>
+  </div>
+
+  <!-- Section des filtres -->
+  <div class="filters-container">
+    <div class="filters-header">
+      <h3>Filtres de recherche</h3>
+      <div class="filter-actions">
+        <button
+          class="btn-toggle-filters"
+          (click)="toggleAdvancedFilters()">
+          {{ showAdvancedFilters ? 'Masquer' : 'Afficher' }} les filtres avancés
+        </button>
+        <button class="btn-clear-filters" (click)="clearFilters()">
+          Effacer les filtres
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres de base -->
+    <div class="basic-filters">
+      <div class="filter-group">
+        <label for="statusFilter">Statut:</label>
+        <select
+          id="statusFilter"
+          [(ngModel)]="filters.status"
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option value="">Tous les statuts</option>
+          <option value="STEP1_APPROVED">Prêt pour validation finale</option>
+          <option value="APPROVED">Approuvée définitivement</option>
+          <option value="REJECTED">Rejetée définitivement</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="missionPurpose">Objectif de mission:</label>
+        <input
+          type="text"
+          id="missionPurpose"
+          [(ngModel)]="filters.missionPurpose"
+          (input)="onFilterChange()"
+          placeholder="Rechercher par objectif..."
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="countryFirstMission">Pays de première mission:</label>
+        <select
+          id="countryFirstMission"
+          [(ngModel)]="filters.countryOfFirstMission"
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option value="">Tous les pays</option>
+          <option *ngFor="let country of uniqueCountriesFirstMission" [value]="country">
+            {{ country }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Filtres avancés -->
+    <div class="advanced-filters" [class.visible]="showAdvancedFilters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="countryIssuingVisa">Pays émetteur du visa:</label>
+          <select
+            id="countryIssuingVisa"
+            [(ngModel)]="filters.countryIssuingVisa"
+            (change)="onFilterChange()"
+            class="filter-select">
+            <option value="">Tous les pays</option>
+            <option *ngFor="let country of uniqueCountriesIssuingVisa" [value]="country">
+              {{ country }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="travelerType">Type de voyageur:</label>
+          <select
+            id="travelerType"
+            [(ngModel)]="filters.travelerType"
+            (change)="onFilterChange()"
+            class="filter-select">
+            <option value="">Tous les types</option>
+            <option *ngFor="let type of uniqueTravelerTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="dateFrom">Date de mission (du):</label>
+          <input
+            type="date"
+            id="dateFrom"
+            [(ngModel)]="filters.dateFrom"
+            (change)="onFilterChange()"
+            class="filter-input">
+        </div>
+
+        <div class="filter-group">
+          <label for="dateTo">Date de mission (au):</label>
+          <input
+            type="date"
+            id="dateTo"
+            [(ngModel)]="filters.dateTo"
+            (change)="onFilterChange()"
+            class="filter-input">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    <i class="error-icon">⚠️</i>
+    {{ error }}
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Liste des demandes de visa -->
+  <div *ngIf="!loading" class="visa-list">
+    <div *ngIf="visaRequests.length === 0" class="no-data">
+      <i class="no-data-icon">📄</i>
+      <p>Aucune demande de visa trouvée avec les filtres actuels</p>
+      <p class="no-data-suggestion">
+        Essayez de modifier vos critères de recherche ou
+        <button class="link-button" (click)="clearFilters()">effacez tous les filtres</button>
+      </p>
+    </div>
+
+    <div *ngFor="let visa of visaRequests" class="visa-card" [class]="getPriorityClass(visa)">
+      <div class="visa-header">
+        <div class="visa-info">
+          <div class="visa-id">
+            <strong>Demande #{{ visa.id }}</strong>
+          </div>
+          <div class="visa-priority" *ngIf="getPriorityText(visa)">
+            {{ getPriorityText(visa) }}
+          </div>
+        </div>
+        <div class="visa-status {{ getStatusClass(visa.status) }}">
+          {{ getStatusText(visa.status) }}
+        </div>
+      </div>
+
+      <div class="visa-summary">
+        <div class="summary-item">
+          <label>Objectif:</label>
+          <span>{{ visa.missionPurpose || 'Non spécifié' }}</span>
+        </div>
+        <div class="summary-item">
+          <label>Destination:</label>
+          <span>{{ visa.countryOfFirstMission || 'Non spécifiée' }}</span>
+        </div>
+        <div class="summary-item">
+          <label>Date de mission:</label>
+          <span>{{ formatDate(visa.dateOfMission) }}</span>
+        </div>
+        <div class="summary-item">
+          <label>Voyageur:</label>
+          <span>{{ visa.travelerType || 'Non spécifié' }}</span>
+        </div>
+      </div>
+
+      <!-- Actions de validation Step 2 -->
+      <div class="validation-actions" *ngIf="visa.status === 'STEP1_APPROVED'">
+        <div class="step2-header">
+          <h4>🎯 Validation Finale - Étape 2</h4>
+          <p class="validation-info">
+            Cette demande a passé la première validation. Effectuez maintenant la validation finale pour approuver ou rejeter définitivement cette demande de visa.
+          </p>
+        </div>
+
+        <div class="action-buttons">
+          <button
+            class="btn btn-review"
+            (click)="openReviewModal(visa)">
+            <i class="btn-icon">👁️</i>
+            Examiner en détail
+          </button>
+          <button
+            class="btn btn-approve-final"
+            (click)="validateStep2(visa.id, true)"
+            [disabled]="loading">
+            <i class="btn-icon">✅</i>
+            Approuver Définitivement
+          </button>
+          <button
+            class="btn btn-reject-final"
+            (click)="validateStep2(visa.id, false)"
+            [disabled]="loading">
+            <i class="btn-icon">❌</i>
+            Rejeter Définitivement
+          </button>
+        </div>
+      </div>
+
+      <!-- Message pour les demandes déjà validées -->
+      <div class="validation-completed" *ngIf="visa.status !== 'STEP1_APPROVED'">
+        <i class="completed-icon">
+          {{ visa.status === 'APPROVED' ? '✅' : visa.status === 'REJECTED' ? '❌' : '🔄' }}
+        </i>
+        <span>
+          <ng-container *ngIf="visa.status === 'APPROVED'">
+            ✨ Demande approuvée définitivement - Processus terminé
+          </ng-container>
+          <ng-container *ngIf="visa.status === 'REJECTED'">
+            ❌ Demande rejetée définitivement
+          </ng-container>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de revue détaillée -->
+  <div class="modal-overlay" *ngIf="selectedVisaForReview" (click)="closeReviewModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Examen Détaillé - Demande #{{ selectedVisaForReview.id }}</h3>
+        <button class="btn-close" (click)="closeReviewModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detail-section">
+          <h4>📋 Informations de Mission</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Objet du déplacement:</label>
+              <span>{{ selectedVisaForReview.missionPurpose || 'Non spécifié' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Date de mission:</label>
+              <span>{{ formatDate(selectedVisaForReview.dateOfMission) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Pays de première mission:</label>
+              <span>{{ selectedVisaForReview.countryOfFirstMission || 'Non spécifié' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Pays émetteur du visa:</label>
+              <span>{{ selectedVisaForReview.countryIssuingVisa || 'Non spécifié' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Type de voyageur:</label>
+              <span>{{ selectedVisaForReview.travelerType || 'Non spécifié' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>📖 Informations Passeport</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Numéro de passeport:</label>
+              <span>{{ selectedVisaForReview.passportNumber || 'Non spécifié' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Date d'émission:</label>
+              <span>{{ formatDate(selectedVisaForReview.issueDate) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Date d'expiration:</label>
+              <span>{{ formatDate(selectedVisaForReview.expiryDate) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Pays d'émission:</label>
+              <span>{{ selectedVisaForReview.issuingCountry || 'Non spécifié' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Émis par:</label>
+              <span>{{ selectedVisaForReview.issuedBy || 'Non spécifié' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>📊 Statut de Validation</h4>
+          <div class="status-timeline">
+            <div class="timeline-item completed">
+              <div class="timeline-marker">✅</div>
+              <div class="timeline-content">
+                <strong>Étape 1 - Validation initiale</strong>
+                <span>Approuvée</span>
+              </div>
+            </div>
+            <div class="timeline-item current">
+              <div class="timeline-marker">🔄</div>
+              <div class="timeline-content">
+                <strong>Étape 2 - Validation finale</strong>
+                <span>En cours de traitement</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeReviewModal()">
+          Fermer
+        </button>
+        <button
+          class="btn btn-approve-final"
+          (click)="validateStep2(selectedVisaForReview.id, true)"
+          [disabled]="loading || !canValidateStep2()">
+          <i class="btn-icon">✅</i>
+          Approuver Définitivement
+        </button>
+        <button
+          class="btn btn-reject-final"
+          (click)="validateStep2(selectedVisaForReview.id, false)"
+          [disabled]="loading || !canValidateStep2()">
+          <i class="btn-icon">❌</i>
+          Rejeter Définitivement
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 package com.example.stage.repository;
 
+import com.example.stage.entity.Passport;
 import com.example.stage.entity.VisaRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +20,7 @@ public interface VisaRequestRepository extends JpaRepository<VisaRequest, Long> 
     // Exemple : rechercher par statut
     List<VisaRequest> findByStatus(String status);
 
+    List<VisaRequest> findByPassportIn(List<Passport> passports);
 
 
      /*   @Query("SELECT DISTINCT v FROM VisaRequest v " +

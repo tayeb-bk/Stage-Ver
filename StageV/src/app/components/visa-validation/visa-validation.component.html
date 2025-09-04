@@ -1,0 +1,292 @@
+<div class="visa-validation-container">
+  <div class="header">
+    <h2>Validation des Demandes de Visa - Étape 1</h2>
+
+    <!-- Statistiques -->
+    <div class="stats">
+      <span class="stat-item">
+        <strong>{{ getFilteredCount() }}</strong> sur <strong>{{ getTotalCount() }}</strong> demandes
+      </span>
+    </div>
+  </div>
+
+  <!-- Section des filtres -->
+  <div class="filters-container">
+    <div class="filters-header">
+      <h3>Filtres de recherche</h3>
+      <div class="filter-actions">
+        <button
+          class="btn-toggle-filters"
+          (click)="toggleAdvancedFilters()">
+          {{ showAdvancedFilters ? 'Masquer' : 'Afficher' }} les filtres avancés
+        </button>
+        <button class="btn-clear-filters" (click)="clearFilters()">
+          Effacer les filtres
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres de base -->
+    <div class="basic-filters">
+      <div class="filter-group">
+        <label for="statusFilter">Statut:</label>
+        <select
+          id="statusFilter"
+          [(ngModel)]="filters.status"
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option value="">Tous les statuts</option>
+          <option value="PENDING">En attente</option>
+          <option value="STEP1_APPROVED">Étape 1 approuvée</option>
+          <option value="STEP1_REJECTED">Étape 1 rejetée</option>
+          <option value="APPROVED">Approuvée</option>
+          <option value="REJECTED">Rejetée</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="missionPurpose">Objectif de mission:</label>
+        <input
+          type="text"
+          id="missionPurpose"
+          [(ngModel)]="filters.missionPurpose"
+          (input)="onFilterChange()"
+          placeholder="Rechercher par objectif..."
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="countryFirstMission">Pays de première mission:</label>
+        <select
+          id="countryFirstMission"
+          [(ngModel)]="filters.countryOfFirstMission"
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option value="">Tous les pays</option>
+          <option *ngFor="let country of uniqueCountriesFirstMission" [value]="country">
+            {{ country }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Filtres avancés -->
+    <div class="advanced-filters" [class.visible]="showAdvancedFilters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="countryIssuingVisa">Pays émetteur du visa:</label>
+          <select
+            id="countryIssuingVisa"
+            [(ngModel)]="filters.countryIssuingVisa"
+            (change)="onFilterChange()"
+            class="filter-select">
+            <option value="">Tous les pays</option>
+            <option *ngFor="let country of uniqueCountriesIssuingVisa" [value]="country">
+              {{ country }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="travelerType">Type de voyageur:</label>
+          <select
+            id="travelerType"
+            [(ngModel)]="filters.travelerType"
+            (change)="onFilterChange()"
+            class="filter-select">
+            <option value="">Tous les types</option>
+            <option *ngFor="let type of uniqueTravelerTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="passportNumber">Numéro de passeport:</label>
+          <input
+            type="text"
+            id="passportNumber"
+            [(ngModel)]="filters.passportNumber"
+            (input)="onFilterChange()"
+            placeholder="Rechercher par numéro..."
+            class="filter-input">
+        </div>
+
+        <div class="filter-group">
+          <label for="issuingCountry">Pays d'émission du passeport:</label>
+          <select
+            id="issuingCountry"
+            [(ngModel)]="filters.issuingCountry"
+            (change)="onFilterChange()"
+            class="filter-select">
+            <option value="">Tous les pays</option>
+            <option *ngFor="let country of uniqueIssuingCountries" [value]="country">
+              {{ country }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="dateFrom">Date de mission (du):</label>
+          <input
+            type="date"
+            id="dateFrom"
+            [(ngModel)]="filters.dateFrom"
+            (change)="onFilterChange()"
+            class="filter-input">
+        </div>
+
+        <div class="filter-group">
+          <label for="dateTo">Date de mission (au):</label>
+          <input
+            type="date"
+            id="dateTo"
+            [(ngModel)]="filters.dateTo"
+            (change)="onFilterChange()"
+            class="filter-input">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    <i class="error-icon">⚠️</i>
+    {{ error }}
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Liste des demandes de visa -->
+  <div *ngIf="!loading" class="visa-list">
+    <div *ngIf="visaRequests.length === 0" class="no-data">
+      <i class="no-data-icon">📄</i>
+      <p>Aucune demande de visa trouvée avec les filtres actuels</p>
+      <p class="no-data-suggestion">
+        Essayez de modifier vos critères de recherche ou
+        <button class="link-button" (click)="clearFilters()">effacez tous les filtres</button>
+      </p>
+    </div>
+
+    <div *ngFor="let visa of visaRequests" class="visa-card">
+      <div class="visa-header">
+        <div class="visa-id">
+          <strong>Demande #{{ visa.id }}</strong>
+        </div>
+        <div class="visa-status {{ getStatusClass(visa.status) }}">
+          {{ getStatusText(visa.status) }}
+        </div>
+      </div>
+
+      <div class="visa-details">
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Objet du déplacement:</label>
+            <span>{{ visa.missionPurpose || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Type de voyageur:</label>
+            <span>{{ visa.travelerType || 'Non spécifié' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Date de mission:</label>
+            <span>{{ formatDate(visa.dateOfMission) }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Pays de première mission:</label>
+            <span>{{ visa.countryOfFirstMission || 'Non spécifié' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Pays émetteur du visa:</label>
+            <span>{{ visa.countryIssuingVisa || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Numéro de passeport:</label>
+            <span>{{ visa.passportNumber || 'Non spécifié' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Date d'émission:</label>
+            <span>{{ formatDate(visa.issueDate) }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Date d'expiration:</label>
+            <span>{{ formatDate(visa.expiryDate) }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-group">
+            <label>Pays d'émission:</label>
+            <span>{{ visa.issuingCountry || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-group">
+            <label>Émis par:</label>
+            <span>{{ visa.issuedBy || 'Non spécifié' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions de validation Step 1 -->
+      <div class="validation-actions" *ngIf="visa.status === 'PENDING'">
+        <h4>Validation Étape 1</h4>
+        <p class="validation-info">
+          Première validation de la demande de visa. Vérifiez les informations et approuvez ou rejetez cette demande.
+        </p>
+        <div class="action-buttons">
+          <button
+            class="btn btn-approve"
+            (click)="validateStep1(visa.id, true)"
+            [disabled]="loading || !canValidate()">
+            <i class="btn-icon">✓</i>
+            Approuver Étape 1
+          </button>
+          <button
+            class="btn btn-reject"
+            (click)="validateStep1(visa.id, false)"
+            [disabled]="loading || !canValidate()">
+            <i class="btn-icon">✗</i>
+            Rejeter Étape 1
+          </button>
+        </div>
+      </div>
+
+      <!-- Message pour les demandes déjà validées -->
+      <div class="validation-completed" *ngIf="visa.status !== 'PENDING'">
+        <i class="completed-icon">
+          {{ visa.status === 'STEP1_APPROVED' ? '✅' : visa.status === 'STEP1_REJECTED' ? '❌' : '🔄' }}
+        </i>
+        <span>
+          <ng-container *ngIf="visa.status === 'STEP1_APPROVED'">
+            Étape 1 approuvée - En attente de l'étape 2
+          </ng-container>
+          <ng-container *ngIf="visa.status === 'STEP1_REJECTED'">
+            Étape 1 rejetée
+          </ng-container>
+          <ng-container *ngIf="visa.status === 'APPROVED'">
+            Demande complètement approuvée
+          </ng-container>
+          <ng-container *ngIf="visa.status === 'REJECTED'">
+            Demande rejetée définitivement
+          </ng-container>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

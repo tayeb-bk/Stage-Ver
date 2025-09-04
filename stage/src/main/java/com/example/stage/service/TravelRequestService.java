@@ -1,7 +1,13 @@
 package com.example.stage.service;
 
+import com.example.stage.entity.Role;
 import com.example.stage.entity.TravelRequest;
+import com.example.stage.entity.User;
 import com.example.stage.repository.TravelRequestRepository;
+import com.example.stage.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
@@ -11,14 +17,52 @@ import java.util.List;
 public class TravelRequestService {
 
     private final TravelRequestRepository travelRequestRepository;
+    private final UserRepository userRepository;
 
-    public TravelRequestService(TravelRequestRepository travelRequestRepository) {
+    public TravelRequestService(TravelRequestRepository travelRequestRepository, UserRepository userRepository) {
         this.travelRequestRepository = travelRequestRepository;
+        this.userRepository = userRepository;
     }
 
-    public List<TravelRequest> getAllTravelRequests() {
-        return travelRequestRepository.findAll();
+
+
+
+
+    // ✅ Récupérer l'utilisateur courant depuis le JWT
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof Jwt jwt) {
+            return userRepository.findById(jwt.getSubject())
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        }
+        throw new RuntimeException("Non authentifié");
     }
+
+    // ✅ GET : TravelRequests filtré selon rôle
+    public List<TravelRequest> getAllTravelRequests() {
+        User currentUser = getCurrentUser();
+
+        if (currentUser.getRole() == Role.ROLE_MEMBER) {
+            // Membre → seulement ses propres demandes
+            return travelRequestRepository.findByRequester(currentUser);
+        } else {
+            // Autres rôles → toutes les demandes
+            return travelRequestRepository.findAll();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public TravelRequest getTravelRequest(Long id) {
         return travelRequestRepository.findById(id).orElseThrow();

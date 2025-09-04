@@ -7,10 +7,13 @@ import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { VisaRequestControllerService } from './services/visa-request-controller.service';
+import { ValidationVisaControllerService } from './services/validation-visa-controller.service';
+import { ValidationTravelControllerService } from './services/validation-travel-controller.service';
 import { TravelRequestControllerService } from './services/travel-request-controller.service';
 import { ProjectControllerService } from './services/project-controller.service';
 import { PassportControllerService } from './services/passport-controller.service';
 import { MissionControllerService } from './services/mission-controller.service';
+import { InvoiceControllerService } from './services/invoice-controller.service';
 import { AuthControllerService } from './services/auth-controller.service';
 
 /**
@@ -22,10 +25,13 @@ import { AuthControllerService } from './services/auth-controller.service';
   declarations: [],
   providers: [
     VisaRequestControllerService,
+    ValidationVisaControllerService,
+    ValidationTravelControllerService,
     TravelRequestControllerService,
     ProjectControllerService,
     PassportControllerService,
     MissionControllerService,
+    InvoiceControllerService,
     AuthControllerService,
     ApiConfiguration
   ],
